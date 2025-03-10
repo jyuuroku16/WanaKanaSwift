@@ -45,7 +45,7 @@ enum ROMANIZATIONS {
  * // => 'tuzigili'
  */
 // Default Options
-let DEFAULT_OPTIONS: [String: Any] = [
+nonisolated(unsafe) let DEFAULT_OPTIONS: [String: Any] = [
     "useObsoleteKana": false,
     "passRomaji": false,
     "convertLongVowelMark": true,

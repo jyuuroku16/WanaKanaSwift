@@ -1,8 +1,5 @@
 import Foundation
 
-// Unicode for the prolonged sound mark 'ー'
-let PROLONGED_SOUND_MARK: Int = 0x30fc
-
 /**
  * Returns true if char is 'ー'
  * - Parameter char: Character string to test

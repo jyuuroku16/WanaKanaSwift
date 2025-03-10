@@ -1,8 +1,5 @@
 import Foundation
 
-// Unicode for the kanji iteration mark '々'
-let KANJI_ITERATION_MARK: Int = 0x3005
-
 /**
  * Returns true if char is '々'
  * - Parameter char: Character string to test

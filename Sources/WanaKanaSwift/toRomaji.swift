@@ -1,9 +1,9 @@
 import Foundation
 
 // Cache for kana to romaji mapping
-private var kanaToRomajiMapCache: [String: [String: String]] = [:]
-private var lastRomanization: String?
-private var lastCustomMapping: [String: String]?
+@MainActor private var kanaToRomajiMapCache: [String: [String: String]] = [:]
+@MainActor private var lastRomanization: String?
+@MainActor private var lastCustomMapping: [String: String]?
 
 /**
  * Creates a kana to romaji mapping tree
@@ -12,29 +12,29 @@ private var lastCustomMapping: [String: String]?
  *   - customRomajiMapping: Custom mapping overrides
  * - Returns: Mapping dictionary
  */
-func createKanaToRomajiMap(
+@MainActor func createKanaToRomajiMap(
     romanization: String,
     customRomajiMapping: [String: String]? = nil
 ) -> [String: String] {
     // Check cache first
     if romanization == lastRomanization &&
-       customRomajiMapping == lastCustomMapping,
+        customRomajiMapping == lastCustomMapping,
        let cached = kanaToRomajiMapCache[romanization] {
         return cached
     }
-
+    
     // Create new mapping
-    var map = getKanaToRomajiTree(romanization)
-
+    var map = getKanaToRomajiTree(romanization: romanization)
+    
     if let customMapping = customRomajiMapping {
         map = mergeCustomMapping(map, customMapping)
     }
-
+    
     // Update cache
     lastRomanization = romanization
     lastCustomMapping = customRomajiMapping
     kanaToRomajiMapCache[romanization] = map
-
+    
     return map
 }
 
@@ -58,13 +58,13 @@ func createKanaToRomajiMap(
  * // => "tuzigili"
  * ```
  */
-func toRomaji(
+@MainActor func toRomaji(
     _ input: String = "",
     options: [String: Any] = [:],
     map: [String: String]? = nil
 ) -> String {
     let config = mergeWithDefaultOptions(options)
-
+    
     let romajiMap: [String: String]
     if let customMap = map {
         romajiMap = customMap
@@ -74,7 +74,7 @@ func toRomaji(
             customRomajiMapping: config["customRomajiMapping"] as? [String: String]
         )
     }
-
+    
     return splitIntoRomaji(input, options: config, map: romajiMap)
         .map { (start, end, romaji) in
             let slice = String(input[input.index(input.startIndex, offsetBy: start)..<input.index(input.startIndex, offsetBy: end)])
@@ -87,16 +87,19 @@ func toRomaji(
 /**
  * Split input into romaji tokens
  */
-private func splitIntoRomaji(
+@MainActor private func splitIntoRomaji(
     _ input: String,
     options: [String: Any],
     map: [String: String]
 ) -> [(Int, Int, String)] {
     var config = options
     config["isDestinationRomaji"] = true
-
+    let wrappedToRomaji: (String) -> String = { input in
+        toRomaji(input, options: config, map: nil)
+    }
+    
     return applyMapping(
-        katakanaToHiragana(input, toRomaji: toRomaji, config: config),
+        katakanaToHiragana(input, toRomaji: wrappedToRomaji, config: config),
         map: map,
         optimize: !(options["IMEMode"] as? Bool ?? false)
     )

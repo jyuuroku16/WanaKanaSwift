@@ -1,9 +1,5 @@
 import Foundation
 
-// Unicode ranges for Hiragana characters
-let HIRAGANA_START: Int = 0x3041
-let HIRAGANA_END: Int = 0x3096
-
 /**
  * Tests a character. Returns true if the character is Hiragana.
  * - Parameter char: Character string to test

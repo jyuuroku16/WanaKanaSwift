@@ -1,9 +1,5 @@
 import Foundation
 
-// Unicode ranges for Katakana characters
-let KATAKANA_START: Int = 0x30a1
-let KATAKANA_END: Int = 0x30fc
-
 /**
  * Tests a character. Returns true if the character is Katakana.
  * - Parameter char: Character string to test

@@ -1,15 +1,5 @@
 import Foundation
 
-// Default options
-let DEFAULT_OPTIONS: [String: Any] = [
-    "useObsoleteKana": false,
-    "passRomaji": false,
-    "convertLongVowelMark": true,
-    "upcaseKatakana": false,
-    "IMEMode": false,
-    "romanization": "hepburn"
-]
-
 /**
  * Easy re-use of merging with default options
  * - Parameter options: User options

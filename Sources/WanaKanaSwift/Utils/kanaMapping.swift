@@ -99,7 +99,7 @@ func transform(_ tree: [String: Any]) -> [String: Any] {
  *   - string: Path string
  * - Returns: Subtree at path
  */
-func getSubTreeOf(_ tree: [String: Any], string: String) -> [String: Any] {
+func getSubTreeOf(_ tree: [String: Any], _ string: String) -> [String: Any] {
     var currentTree = tree
 
     for char in string {

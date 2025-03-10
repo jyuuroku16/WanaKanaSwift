@@ -1,10 +1,10 @@
 import Foundation
 
 // Cache for romaji to kana mapping
-private var romajiToKanaMapCache: [String: [String: String]] = [:]
-private var lastIMEMode: Bool?
-private var lastUseObsoleteKana: Bool?
-private var lastCustomMapping: [String: String]?
+@MainActor private var romajiToKanaMapCache: [String: [String: String]] = [:]
+@MainActor private var lastIMEMode: Bool?
+@MainActor private var lastUseObsoleteKana: Bool?
+@MainActor private var lastCustomMapping: [String: String]?
 
 /**
  * Creates a romaji to kana mapping tree
@@ -14,7 +14,7 @@ private var lastCustomMapping: [String: String]?
  *   - customKanaMapping: Custom mapping overrides
  * - Returns: Mapping dictionary
  */
-func createRomajiToKanaMap(
+@MainActor func createRomajiToKanaMap(
     IMEMode: Bool,
     useObsoleteKana: Bool,
     customKanaMapping: [String: String]? = nil
@@ -77,7 +77,7 @@ func createRomajiToKanaMap(
  * // => "わにbanaに"
  * ```
  */
-func toKana(
+@MainActor func toKana(
     _ input: String = "",
     options: [String: Any] = [:],
     map: [String: String]? = nil
@@ -125,7 +125,7 @@ func toKana(
  *   - map: Optional custom mapping
  * - Returns: Array of tokens with start, end, and kana
  */
-func splitIntoConvertedKana(
+@MainActor func splitIntoConvertedKana(
     _ input: String = "",
     options: [String: Any] = [:],
     map: [String: String]? = nil

@@ -19,7 +19,7 @@ import Foundation
  * // => "ヰ"
  * ```
  */
-func toKatakana(_ input: String = "", options: [String: Any] = [:]) -> String {
+@MainActor func toKatakana(_ input: String = "", options: [String: Any] = [:]) -> String {
     let mergedOptions = mergeWithDefaultOptions(options)
 
     if mergedOptions["passRomaji"] as? Bool == true {
@@ -27,7 +27,7 @@ func toKatakana(_ input: String = "", options: [String: Any] = [:]) -> String {
     }
 
     if isMixed(input) || isRomaji(input) || isCharEnglishPunctuation(input) {
-        let hiragana = toKana(input.lowercased(), config: mergedOptions)
+        let hiragana = toKana(input.lowercased(), options: mergedOptions)
         return hiraganaToKatakana(hiragana)
     }
 

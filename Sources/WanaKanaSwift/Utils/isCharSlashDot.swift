@@ -1,8 +1,5 @@
 import Foundation
 
-// Unicode for the kana middle dot '・'
-let KANA_SLASH_DOT: Int = 0x30fb
-
 /**
  * Tests if char is '・'
  * - Parameter char: Character string to test

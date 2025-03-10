@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Constants
 
-private var kanaToHepburnMap: [String: Any]? = nil
+@MainActor var kanaToHepburnMap: [String: Any]? = nil
 
 // prettier-ignore
 private let BASIC_ROMAJI: [String: String] = [
@@ -25,7 +25,7 @@ private let BASIC_ROMAJI: [String: String] = [
     "ゔぁ": "va", "ゔぃ": "vi", "ゔ": "vu",  "ゔぇ": "ve", "ゔぉ": "vo"
 ]
 
-private let SPECIAL_SYMBOLS: [String: String] = [
+fileprivate let SPECIAL_SYMBOLS: [String: String] = [
     "。": ".",
     "、": ",",
     "：": ":",
@@ -49,7 +49,7 @@ private let SPECIAL_SYMBOLS: [String: String] = [
 
 // んい -> n'i
 private let AMBIGUOUS_VOWELS = ["あ", "い", "う", "え", "お", "や", "ゆ", "よ"]
-private let SMALL_Y = ["ゃ": "ya", "ゅ": "yu", "ょ": "yo"]
+fileprivate let SMALL_Y = ["ゃ": "ya", "ゅ": "yu", "ょ": "yo"]
 private let SMALL_Y_EXTRA = ["ぃ": "yi", "ぇ": "ye"]
 private let SMALL_AIUEO = [
     "ぁ": "a",
@@ -90,9 +90,9 @@ private let SOKUON_WHITELIST = [
 
 // MARK: - Public Functions
 
-func getKanaToRomajiTree(romanization: Romanization) -> [String: Any] {
+@MainActor func getKanaToRomajiTree(romanization: String) -> [String: Any] {
     switch romanization {
-    case .hepburn:
+    case ROMANIZATIONS.HEPBURN:
         return getKanaToHepburnTree()
     default:
         return [:]
@@ -101,7 +101,7 @@ func getKanaToRomajiTree(romanization: Romanization) -> [String: Any] {
 
 // MARK: - Private Functions
 
-private func getKanaToHepburnTree() -> [String: Any] {
+@MainActor private func getKanaToHepburnTree() -> [String: Any] {
     if kanaToHepburnMap == nil {
         kanaToHepburnMap = createKanaToHepburnMap()
     }
@@ -111,21 +111,23 @@ private func getKanaToHepburnTree() -> [String: Any] {
 private func createKanaToHepburnMap() -> [String: Any] {
     var romajiTree = transform(BASIC_ROMAJI)
 
-    let subtreeOf = { (string: String) -> [String: Any] in
+    func subtreeOf(_ string: String) -> [String: Any] {
         return getSubTreeOf(romajiTree, string)
     }
 
     let setTrans = { (string: String, transliteration: String) in
-        subtreeOf(string)[""] = transliteration
+        var subtree = subtreeOf(string)
+        subtree[""] = transliteration
     }
 
     // Add special symbols
     for (jsymbol, symbol) in SPECIAL_SYMBOLS {
-        subtreeOf(jsymbol)[""] = symbol
+        var subtree = subtreeOf(jsymbol)
+        subtree[""] = symbol
     }
 
     // Add small y and aiueo
-    for (roma, kana) in SMALL_Y.merging(SMALL_AIUEO) { key, _ in key } {
+    for (roma, kana) in SMALL_Y.merging(SMALL_AIUEO, uniquingKeysWith: { key, _ in key }) {
         setTrans(roma, kana)
     }
 

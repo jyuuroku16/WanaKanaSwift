@@ -1,7 +1,7 @@
 import Foundation
 
 // NOTE: not exactly kunrei shiki, for example ぢゃ -> dya instead of zya, to avoid name clashing
-let BASIC_KUNREI: [String: Any] = [
+nonisolated(unsafe) let BASIC_KUNREI: [String: Any] = [
     "a": "あ", "i": "い", "u": "う", "e": "え", "o": "お",
     "k": ["a": "か", "i": "き", "u": "く", "e": "け", "o": "こ"],
     "s": ["a": "さ", "i": "し", "u": "す", "e": "せ", "o": "そ"],
@@ -20,10 +20,11 @@ let BASIC_KUNREI: [String: Any] = [
     "v": ["a": "ゔぁ", "i": "ゔぃ", "u": "ゔ", "e": "ゔぇ", "o": "ゔぉ"]
 ]
 
-let SPECIAL_SYMBOLS: [String: String] = [
+fileprivate let SPECIAL_SYMBOLS: [String: String] = [
     ".": "。", ",": "、", ":": "：", "/": "・",
     "!": "！", "?": "？", "~": "〜", "-": "ー",
-    "'": "「", "'": "」", """: "『", """: "』",
+    "\u{2018}": "「", "\u{2019}": "」",  // 左右单引号
+    "\u{201C}": "『", "\u{201D}": "』",  // 左右双引号
     "[": "［", "]": "］", "(": "（", ")": "）",
     "{": "｛", "}": "｝"
 ]
@@ -35,7 +36,7 @@ let CONSONANTS: [String: String] = [
     "v": "ゔ", "q": "く", "f": "ふ"
 ]
 
-let SMALL_Y: [String: String] = [
+fileprivate let SMALL_Y: [String: String] = [
     "ya": "ゃ", "yi": "ぃ", "yu": "ゅ", "ye": "ぇ", "yo": "ょ"
 ]
 
@@ -102,109 +103,163 @@ let AIUEO_CONSTRUCTIONS: [String: String] = [
     "f": "ふ"
 ]
 
-private var romajiToKanaMap: [String: Any]?
-
-func transform(_ mapping: [String: Any]) -> [String: Any] {
-    var result: [String: Any] = [:]
-    
-    for (key, value) in mapping {
-        if let stringValue = value as? String {
-            result[key] = ["": stringValue]
-        } else if let dictValue = value as? [String: Any] {
-            result[key] = transform(dictValue)
-        }
-    }
-    
-    return result
-}
-
-func getSubTreeOf(tree: [String: Any], path: String) -> [String: Any]? {
-    var currentTree: Any = tree
-    
-    for char in path {
-        guard let dict = currentTree as? [String: Any],
-              let nextTree = dict[String(char)] else {
-            return nil
-        }
-        currentTree = nextTree
-    }
-    
-    return currentTree as? [String: Any]
-}
-
 func createRomajiToKanaMap() -> [String: Any] {
     var kanaTree = transform(BASIC_KUNREI)
+    
+    // Helper function for getting subtree
+    func subtreeOf(_ string: String) -> [String: Any] {
+        return getSubTreeOf(kanaTree, string)
+    }
     
     // add tya, sya, etc.
     for (consonant, yKana) in CONSONANTS {
         for (roma, kana) in SMALL_Y {
-            if var subtree = getSubTreeOf(tree: kanaTree, path: consonant + roma) {
-                subtree[""] = yKana + kana
-            }
+            var subtree = subtreeOf(consonant + roma)
+            subtree[""] = yKana + kana
         }
     }
     
     // add special symbols
     for (symbol, jSymbol) in SPECIAL_SYMBOLS {
-        if var subtree = getSubTreeOf(tree: kanaTree, path: symbol) {
-            subtree[""] = jSymbol
-        }
+        var subtree = subtreeOf(symbol)
+        subtree[""] = jSymbol
     }
     
     // things like うぃ, くぃ, etc.
     for (consonant, aiueoKana) in AIUEO_CONSTRUCTIONS {
         for (vowel, kana) in SMALL_VOWELS {
-            if var subtree = getSubTreeOf(tree: kanaTree, path: consonant + vowel) {
-                subtree[""] = aiueoKana + kana
-            }
+            var subtree = subtreeOf(consonant + vowel)
+            subtree[""] = aiueoKana + kana
         }
     }
     
     // different ways to write ん
     for nChar in ["n", "n'", "xn"] {
-        if var subtree = getSubTreeOf(tree: kanaTree, path: nChar) {
-            subtree[""] = "ん"
-        }
+        var subtree = subtreeOf(nChar)
+        subtree[""] = "ん"
     }
     
     // c is equivalent to k, but not for chi, cha, etc.
-    if let kTree = kanaTree["k"] {
-        kanaTree["c"] = kTree
+    if let kTree = kanaTree["k"] as? [String: Any] {
+        kanaTree["c"] = kTree.deepCopy()
     }
     
     // Handle aliases
     for (string, alternative) in ALIASES {
         let allExceptLast = String(string.dropLast())
         let last = String(string.last!)
-        if var parentTree = getSubTreeOf(tree: kanaTree, path: allExceptLast),
-           let altTree = getSubTreeOf(tree: kanaTree, path: alternative) {
-            parentTree[last] = altTree
+        var parentTree = subtreeOf(allExceptLast)
+        let altTree = subtreeOf(alternative)
+        parentTree[last] = altTree.deepCopy()
+    }
+    
+    // Helper function for getting alternatives
+    func getAlternatives(_ string: String) -> [String] {
+        var alternatives: [String] = []
+        
+        // Add alternatives from ALIASES
+        for (alt, roma) in ALIASES where string.hasPrefix(roma) {
+            alternatives.append(string.replacingOccurrences(of: roma, with: alt))
+        }
+        
+        // Add c->k alternative
+        if string.hasPrefix("k") {
+            alternatives.append(string.replacingOccurrences(of: "k", with: "c"))
+        }
+        
+        return alternatives
+    }
+    
+    // Handle small letters
+    for (kunreiRoma, kana) in SMALL_LETTERS {
+        let xRoma = "x\(kunreiRoma)"
+        var xSubtree = subtreeOf(xRoma)
+        xSubtree[""] = kana
+        
+        let allExceptLast = String(kunreiRoma.dropLast())
+        let last = String(kunreiRoma.last!)
+        
+        // ltu -> xtu -> っ
+        var parentTree = subtreeOf("l\(allExceptLast)")
+        parentTree[last] = xSubtree
+        
+        // ltsu -> ltu -> っ
+        for altRoma in getAlternatives(kunreiRoma) {
+            for prefix in ["l", "x"] {
+                var altParentTree = subtreeOf("\(prefix)\(String(altRoma.dropLast()))")
+                altParentTree[String(altRoma.last!)] = subtreeOf("\(prefix)\(kunreiRoma)")
+            }
         }
     }
     
     // Handle special cases
     for (string, kana) in SPECIAL_CASES {
-        if var subtree = getSubTreeOf(tree: kanaTree, path: string) {
-            subtree[""] = kana
+        var subtree = subtreeOf(string)
+        subtree[""] = kana
+    }
+    
+    // Helper function to add っ
+    func addTsu(_ tree: [String: Any]) -> [String: Any] {
+        var tsuTree: [String: Any] = [:]
+        for (key, value) in tree {
+            if key.isEmpty {
+                tsuTree[key] = "っ\(value)"
+            } else if let subTree = value as? [String: Any] {
+                tsuTree[key] = addTsu(subTree)
+            }
+        }
+        return tsuTree
+    }
+    
+    // add kka, tta, etc.
+    let consonantsToProcess = Array(CONSONANTS.keys) + ["c", "y", "w", "j"]
+    for consonant in consonantsToProcess {
+        if var subtree = kanaTree[consonant] as? [String: Any] {
+            subtree[consonant] = addTsu(subtree)
+            kanaTree[consonant] = subtree
         }
     }
     
-    return kanaTree
+    // nn should not be っん
+    if var nTree = kanaTree["n"] as? [String: Any] {
+        nTree["n"] = nil
+        kanaTree["n"] = nTree
+    }
+    
+    // Return immutable copy
+    return kanaTree.deepCopy()
 }
 
-func getRomajiToKanaTree() -> [String: Any] {
+// Helper extension for deep copying dictionaries
+extension Dictionary {
+    func deepCopy() -> [Key: Value] {
+        var copy: [Key: Value] = [:]
+        for (key, value) in self {
+            if let value = value as? NSCopying {
+                copy[key] = value.copy() as? Value
+            } else if let value = value as? [String: Any] {
+                copy[key] = value.deepCopy() as? Value
+            } else {
+                copy[key] = value
+            }
+        }
+        return copy
+    }
+}
+
+@MainActor var romajiToKanaMap: [String: Any]?
+
+@MainActor func getRomajiToKanaTree() -> [String: Any] {
     if romajiToKanaMap == nil {
         romajiToKanaMap = createRomajiToKanaMap()
     }
     return romajiToKanaMap!
 }
 
-func createCustomMapping() -> [String: String] {
-    return [
-        "wi": "ゐ",
-        "we": "ゑ"
-    ]
-}
+nonisolated(unsafe) let USE_OBSOLETE_KANA_MAP = createCustomMapping([
+  "wi": "ゐ",
+  "we": "ゑ",
+]);
 
 func IME_MODE_MAP(_ map: [String: Any]) -> [String: Any] {
     var mapCopy = map

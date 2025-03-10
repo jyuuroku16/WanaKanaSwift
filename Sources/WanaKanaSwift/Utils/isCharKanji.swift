@@ -1,9 +1,5 @@
 import Foundation
 
-// Unicode ranges for Kanji characters
-let KANJI_START: Int = 0x4e00
-let KANJI_END: Int = 0x9faf
-
 /**
  * Tests a character. Returns true if the character is a CJK ideograph (kanji).
  * - Parameter char: Character string to test
