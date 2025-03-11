@@ -15,7 +15,7 @@ import Foundation
  * // => false
  * ```
  */
-func isHiragana(_ input: String = "") -> Bool {
+func _isHiragana(_ input: String = "") -> Bool {
     if input.isEmpty { return false }
     return Array(input).allSatisfy { isCharHiragana(String($0)) }
 }

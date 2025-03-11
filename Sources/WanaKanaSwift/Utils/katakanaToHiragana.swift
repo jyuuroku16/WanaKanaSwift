@@ -30,7 +30,7 @@ func isKanaAsSymbol(_ char: String) -> Bool {
  *   - options: Configuration options
  * - Returns: Converted text
  */
-func katakanaToHiragana(
+@MainActor func katakanaToHiragana(
     _ input: String = "",
     toRomaji: (String) -> String,
     config: [String: Any] = [:]
@@ -58,7 +58,7 @@ func katakanaToHiragana(
            !previousKana.isEmpty &&
            isCharInnerLongDash(charString, index: index) {
             // Transform previousKana back to romaji, and slice off the vowel
-            let romaji = String(toRomaji(previousKana).suffix(1))
+            let romaji = String(_toRomaji(previousKana).suffix(1))
             // However, ensure 'オー' => 'おお' => 'oo' if this is a transform on the way to romaji
             if index > 0 &&
                isCharKatakana(String(characters[index - 1])) &&

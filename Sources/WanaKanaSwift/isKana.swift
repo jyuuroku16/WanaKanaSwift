@@ -11,7 +11,7 @@ import Foundation
  *   isKana("A")      // => false
  *   isKana("あAア")  // => false
  */
-func isKana(_ input: String = "") -> Bool {
+func _isKana(_ input: String = "") -> Bool {
     if isEmpty(input) { return false }
     return input.map { String($0) }.allSatisfy { isCharKana($0) }
 }

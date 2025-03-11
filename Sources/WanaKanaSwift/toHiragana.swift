@@ -19,30 +19,30 @@ import Foundation
  * // => "ゐ"
  * ```
  */
-@MainActor func toHiragana(_ input: String = "", options: [String: Any] = [:]) -> String {
+@MainActor func _toHiragana(_ input: String = "", options: [String: Any] = [:]) -> String {
     let config = mergeWithDefaultOptions(options)
     
     if config["passRomaji"] as? Bool == true {
         let wrappedToRomaji: (String) -> String = { input in
-            toRomaji(input, options: config, map: nil)
+            _toRomaji(input, options: config, map: nil)
         }
         return katakanaToHiragana(input, toRomaji: wrappedToRomaji, config: config)
     }
     
-    if isMixed(input, options: ["passKanji": true]) {
+    if _isMixed(input, options: ["passKanji": true]) {
         let wrappedToRomaji: (String) -> String = { input in
-            toRomaji(input, options: config, map: nil)
+            _toRomaji(input, options: config, map: nil)
         }
         let convertedKatakana = katakanaToHiragana(input, toRomaji: wrappedToRomaji, config: config)
-        return toKana(convertedKatakana.lowercased(), options: config)
+        return _toKana(convertedKatakana.lowercased(), options: config)
     }
     
-    if isRomaji(input) || isCharEnglishPunctuation(input) {
-        return toKana(input.lowercased(), options: config)
+    if _isRomaji(input) || isCharEnglishPunctuation(input) {
+        return _toKana(input.lowercased(), options: config)
     }
     
     let wrappedToRomaji: (String) -> String = { input in
-        toRomaji(input, options: config, map: nil)
+        _toRomaji(input, options: config, map: nil)
     }
     return katakanaToHiragana(input, toRomaji: wrappedToRomaji, config: config)
 }

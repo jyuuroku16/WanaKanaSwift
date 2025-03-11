@@ -2,17 +2,17 @@ import Foundation
 
 // Helper functions
 private func isLeadingWithoutInitialKana(_ input: String, leading: Bool) -> Bool {
-    return leading && !isKana(String(input.first ?? Character("")))
+    return leading && !_isKana(String(input.first ?? Character("")))
 }
 
 private func isTrailingWithoutFinalKana(_ input: String, leading: Bool) -> Bool {
-    return !leading && !isKana(String(input.last ?? Character("")))
+    return !leading && !_isKana(String(input.last ?? Character("")))
 }
 
 private func isInvalidMatcher(_ input: String, matchKanji: String) -> Bool {
     return (
-        (!matchKanji.isEmpty && !Array(matchKanji).contains { isKanji(String($0)) }) ||
-        (matchKanji.isEmpty && isKana(input))
+        (!matchKanji.isEmpty && !Array(matchKanji).contains { _isKanji(String($0)) }) ||
+        (matchKanji.isEmpty && _isKana(input))
     )
 }
 
@@ -37,11 +37,11 @@ private func isInvalidMatcher(_ input: String, matchKanji: String) -> Bool {
  * // => "みまい"
  * ```
  */
-func stripOkurigana(_ input: String = "", options: [String: Any] = [:]) -> String {
+func _stripOkurigana(_ input: String = "", options: [String: Any] = [:]) -> String {
     let leading = options["leading"] as? Bool ?? false
     let matchKanji = options["matchKanji"] as? String ?? ""
 
-    if !isJapanese(input) ||
+    if !_isJapanese(input) ||
        isLeadingWithoutInitialKana(input, leading: leading) ||
        isTrailingWithoutFinalKana(input, leading: leading) ||
        isInvalidMatcher(input, matchKanji: matchKanji) {
@@ -49,7 +49,7 @@ func stripOkurigana(_ input: String = "", options: [String: Any] = [:]) -> Strin
     }
 
     let chars = matchKanji.isEmpty ? input : matchKanji
-    let tokens = tokenize(chars) as? [String] ?? []
+    let tokens = _tokenize(chars) as? [String] ?? []
 
     let pattern: String
     if leading {

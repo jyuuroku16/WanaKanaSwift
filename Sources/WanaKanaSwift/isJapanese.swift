@@ -25,7 +25,7 @@ import Foundation
  * // => true
  * ```
  */
-func isJapanese(_ input: String = "", allowed: String? = nil) -> Bool {
+func _isJapanese(_ input: String = "", allowed: String? = nil) -> Bool {
     if input.isEmpty { return false }
 
     let regex: NSRegularExpression?

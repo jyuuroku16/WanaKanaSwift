@@ -23,7 +23,7 @@ import Foundation
  * // => true
  * ```
  */
-func isRomaji(_ input: String = "", allowed: String? = nil) -> Bool {
+func _isRomaji(_ input: String = "", allowed: String? = nil) -> Bool {
     if input.isEmpty { return false }
 
     let regex: NSRegularExpression?

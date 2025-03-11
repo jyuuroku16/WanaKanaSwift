@@ -19,7 +19,7 @@ import Foundation
  * // => false
  * ```
  */
-func isKanji(_ input: String = "") -> Bool {
+func _isKanji(_ input: String = "") -> Bool {
     if input.isEmpty { return false }
     return Array(input).allSatisfy { isCharKanji(String($0)) }
 }

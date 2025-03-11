@@ -101,7 +101,7 @@ struct Token {
  * // ["truly ", "私は悲しい"]
  * ```
  */
-func tokenize(_ input: String = "", options: [String: Bool] = [:]) -> Any {
+func _tokenize(_ input: String = "", options: [String: Bool] = [:]) -> Any {
     let compact = options["compact"] ?? false
     let detailed = options["detailed"] ?? false
     

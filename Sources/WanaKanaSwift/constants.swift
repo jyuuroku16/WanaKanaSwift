@@ -1,15 +1,15 @@
 import Foundation
 
 // Version
-let VERSION = "5.3.1"
+public let VERSION = "5.3.1"
 
 // Conversion Methods
-enum TO_KANA_METHODS {
+public enum TO_KANA_METHODS {
     static let HIRAGANA = "toHiragana"
     static let KATAKANA = "toKatakana"
 }
 
-enum ROMANIZATIONS {
+public enum ROMANIZATIONS {
     static let HEPBURN = "hepburn"
 }
 

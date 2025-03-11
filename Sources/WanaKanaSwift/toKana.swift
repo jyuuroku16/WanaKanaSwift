@@ -77,7 +77,7 @@ import Foundation
  * // => "わにbanaに"
  * ```
  */
-@MainActor func toKana(
+@MainActor func _toKana(
     _ input: String = "",
     options: [String: Any] = [:],
     map: [String: String]? = nil

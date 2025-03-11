@@ -21,17 +21,17 @@ import Foundation
  * // => false
  * ```
  */
-func isMixed(_ input: String = "", options: [String: Any] = ["passKanji": true]) -> Bool {
+func _isMixed(_ input: String = "", options: [String: Any] = ["passKanji": true]) -> Bool {
     let chars = Array(input).map { String($0) }
     var hasKanji = false
 
     if options["passKanji"] as? Bool == false {
-        hasKanji = chars.contains { isKanji($0) }
+        hasKanji = chars.contains { _isKanji($0) }
     }
 
-    let hasHiragana = chars.contains { isHiragana($0) }
-    let hasKatakana = chars.contains { isKatakana($0) }
-    let hasRomaji = chars.contains { isRomaji($0) }
+    let hasHiragana = chars.contains { _isHiragana($0) }
+    let hasKatakana = chars.contains { _isKatakana($0) }
+    let hasRomaji = chars.contains { _isRomaji($0) }
 
     return (hasHiragana || hasKatakana) && hasRomaji && !hasKanji
 }

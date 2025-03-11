@@ -58,7 +58,7 @@ import Foundation
  * // => "tuzigili"
  * ```
  */
-@MainActor func toRomaji(
+@MainActor func _toRomaji(
     _ input: String = "",
     options: [String: Any] = [:],
     map: [String: String]? = nil
@@ -78,7 +78,7 @@ import Foundation
     return splitIntoRomaji(input, options: config, map: romajiMap)
         .map { (start, end, romaji) in
             let slice = String(input[input.index(input.startIndex, offsetBy: start)..<input.index(input.startIndex, offsetBy: end)])
-            let makeUpperCase = (config["upcaseKatakana"] as? Bool ?? false) && isKatakana(slice)
+            let makeUpperCase = (config["upcaseKatakana"] as? Bool ?? false) && _isKatakana(slice)
             return makeUpperCase ? romaji.uppercased() : romaji
         }
         .joined()
@@ -95,7 +95,7 @@ import Foundation
     var config = options
     config["isDestinationRomaji"] = true
     let wrappedToRomaji: (String) -> String = { input in
-        toRomaji(input, options: config, map: nil)
+        _toRomaji(input, options: config, map: nil)
     }
     
     return applyMapping(
