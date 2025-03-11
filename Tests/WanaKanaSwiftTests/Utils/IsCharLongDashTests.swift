@@ -4,7 +4,7 @@ import Testing
 @Suite("IsCharLongDashTests")
 final class IsCharLongDashTests {
     @Test("sane default") func saneDefault() async throws {
-        #expect(isCharLongDash(nil) == false)
+        #expect(isCharLongDash() == false)
     }
 
     @Test("passes parameter tests") func parameterTests() async throws {

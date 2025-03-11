@@ -4,7 +4,7 @@ import Testing
 @Suite("IsCharJapaneseTests")
 final class IsCharJapaneseTests {
     @Test("sane defaults") func saneDefaults() async throws {
-        #expect(isCharJapanese(nil) == false)
+        #expect(isCharJapanese() == false)
         #expect(isCharJapanese("") == false)
     }
 

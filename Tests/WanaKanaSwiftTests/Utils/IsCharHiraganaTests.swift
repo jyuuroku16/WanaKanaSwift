@@ -4,7 +4,7 @@ import Testing
 @Suite("IsCharHiraganaTests")
 final class IsCharHiraganaTests {
     @Test("sane defaults") func saneDefaults() async throws {
-        #expect(isCharHiragana(nil) == false)
+        #expect(isCharHiragana() == false)
         #expect(isCharHiragana("") == false)
     }
 

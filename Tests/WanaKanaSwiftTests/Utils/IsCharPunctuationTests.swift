@@ -4,7 +4,7 @@ import Testing
 @Suite("IsCharPunctuationTests")
 final class IsCharPunctuationTests {
     @Test("sane defaults") func saneDefaults() async throws {
-        #expect(isCharPunctuation(nil) == false)
+        #expect(isCharPunctuation() == false)
         #expect(isCharPunctuation("") == false)
     }
 

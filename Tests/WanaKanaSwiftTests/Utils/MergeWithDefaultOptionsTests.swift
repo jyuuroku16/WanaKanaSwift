@@ -4,7 +4,7 @@ import Testing
 @Suite("MergeWithDefaultOptionsTests")
 final class MergeWithDefaultOptionsTests {
     @Test("sane defaults") func saneDefaults() async throws {
-        #expect(mergeWithDefaultOptions(nil) == DEFAULT_OPTIONS)
+        #expect(mergeWithDefaultOptions() == DEFAULT_OPTIONS)
         #expect(mergeWithDefaultOptions([:]) == DEFAULT_OPTIONS)
     }
 

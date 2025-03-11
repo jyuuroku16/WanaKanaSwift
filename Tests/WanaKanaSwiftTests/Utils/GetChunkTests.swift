@@ -4,7 +4,7 @@ import Testing
 @Suite("GetChunkTests")
 final class GetChunkTests {
     @Test("sane default") func saneDefault() async throws {
-        #expect(getChunk(nil) == "")
+        #expect(getChunk() == "")
     }
 
     @Test("passes parameter tests") func parameterTests() async throws {

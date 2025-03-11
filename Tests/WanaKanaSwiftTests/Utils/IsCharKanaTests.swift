@@ -4,7 +4,7 @@ import Testing
 @Suite("IsCharKanaTests")
 final class IsCharKanaTests {
     @Test("sane defaults") func saneDefaults() async throws {
-        #expect(isCharKana(nil) == false)
+        #expect(isCharKana() == false)
         #expect(isCharKana("") == false)
     }
 

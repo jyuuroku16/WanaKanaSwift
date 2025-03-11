@@ -4,7 +4,7 @@ import Testing
 @Suite("IsCharSlashDotTests")
 final class IsCharSlashDotTests {
     @Test("sane default") func saneDefault() async throws {
-        #expect(isCharSlashDot(nil) == false)
+        #expect(isCharSlashDot() == false)
     }
 
     @Test("passes parameter tests") func parameterTests() async throws {

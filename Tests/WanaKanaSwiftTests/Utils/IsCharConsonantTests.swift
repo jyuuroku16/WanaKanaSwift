@@ -4,7 +4,7 @@ import Testing
 @Suite("IsCharConsonantTests")
 final class IsCharConsonantTests {
     @Test("sane default") func saneDefault() async throws {
-        #expect(isCharConsonant(nil) == false)
+        #expect(isCharConsonant() == false)
     }
 
     @Test("passes parameter tests") func parameterTests() async throws {

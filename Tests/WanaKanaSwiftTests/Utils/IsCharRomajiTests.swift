@@ -4,7 +4,7 @@ import Testing
 @Suite("IsCharRomajiTests")
 final class IsCharRomajiTests {
     @Test("sane default") func saneDefault() async throws {
-        #expect(isCharRomaji(nil) == false)
+        #expect(isCharRomaji() == false)
     }
 
     @Test("passes parameter tests") func parameterTests() async throws {

@@ -4,7 +4,7 @@ import Testing
 @Suite("IsCharUpperCaseTests")
 final class IsCharUpperCaseTests {
     @Test("sane defaults") func saneDefaults() async throws {
-        #expect(isCharUpperCase(nil) == false)
+        #expect(isCharUpperCase() == false)
         #expect(isCharUpperCase("") == false)
     }
 

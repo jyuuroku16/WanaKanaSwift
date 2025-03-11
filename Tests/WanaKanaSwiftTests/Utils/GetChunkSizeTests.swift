@@ -4,14 +4,14 @@ import Testing
 @Suite("GetChunkSizeTests")
 final class GetChunkSizeTests {
     @Test("sane default") func saneDefault() async throws {
-        #expect(getChunkSize(nil, nil) == 0)
+        #expect(getChunkSize() == 0)
     }
 
     @Test("passes parameter tests") func parameterTests() async throws {
-        #expect(getChunkSize(4, 2) == 2)
-        #expect(getChunkSize(2, 2) == 2)
-        #expect(getChunkSize(2, 4) == 2)
-        #expect(getChunkSize(0, 0) == 0)
-        #expect(getChunkSize(3, -1) == -1)
+        #expect(getChunkSize(max: 4, remaining: 2) == 2)
+        #expect(getChunkSize(max: 2, remaining: 2) == 2)
+        #expect(getChunkSize(max: 2, remaining: 4) == 2)
+        #expect(getChunkSize(max: 0, remaining: 0) == 0)
+        #expect(getChunkSize(max: 3, remaining: -1) == -1)
     }
 }
