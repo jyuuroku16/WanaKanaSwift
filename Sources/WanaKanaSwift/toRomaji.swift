@@ -33,9 +33,9 @@ import Foundation
     // Update cache
     lastRomanization = romanization
     lastCustomMapping = customRomajiMapping
-    kanaToRomajiMapCache[romanization] = map
+    kanaToRomajiMapCache[romanization] = map as? [String: String]
     
-    return map
+    return map as! [String: String]
 }
 
 /**
@@ -102,5 +102,5 @@ import Foundation
         katakanaToHiragana(input, toRomaji: wrappedToRomaji, config: config),
         map: map,
         optimize: !(options["IMEMode"] as? Bool ?? false)
-    )
+    ) as! [(Int, Int, String)]
 }

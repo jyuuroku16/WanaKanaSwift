@@ -46,9 +46,9 @@ import Foundation
     lastIMEMode = IMEMode
     lastUseObsoleteKana = useObsoleteKana
     lastCustomMapping = customKanaMapping
-    romajiToKanaMapCache[cacheKey] = map
+    romajiToKanaMapCache[cacheKey] = map as? [String: String]
 
-    return map
+    return map as! [String: String]
 }
 
 /**

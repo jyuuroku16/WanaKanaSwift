@@ -104,25 +104,22 @@ struct Token {
 func tokenize(_ input: String = "", options: [String: Bool] = [:]) -> Any {
     let compact = options["compact"] ?? false
     let detailed = options["detailed"] ?? false
-
+    
     if input.isEmpty { return [] }
-
+    
     let chars = Array(input).map { String($0) }
-    guard var initial = chars.first else { return [] }
-    var prevType = getType(initial, compact: compact)
-
-    if detailed {
-        initial = Token(type: prevType, value: initial)
-    }
-
+    guard let firstChar = chars.first else { return [] }
+    var prevType = getType(firstChar, compact: compact)
+    
+    let initial: Any = detailed ? Token(type: prevType, value: firstChar) : firstChar
     var result: [Any] = [initial]
-
+    
     for char in chars.dropFirst() {
         let currType = getType(char, compact: compact)
         let sameType = currType == prevType
         prevType = currType
         var newValue = char
-
+        
         if sameType {
             if detailed {
                 if let lastToken = result.popLast() as? Token {
@@ -134,13 +131,13 @@ func tokenize(_ input: String = "", options: [String: Bool] = [:]) -> Any {
                 }
             }
         }
-
+        
         if detailed {
             result.append(Token(type: currType, value: newValue))
         } else {
             result.append(newValue)
         }
     }
-
+    
     return result
 }

@@ -35,23 +35,23 @@ func applyMapping(_ string: String, map mapping: [String: Any], optimize convert
             remaining: String(remaining.dropFirst()),
             lastCursor: currentCursor,
             currentCursor: currentCursor + 1
-        )
+        ) as! [(Int, Int, String?)]
     }
 
-    func parse(_ tree: [String: Any], remaining: String, lastCursor: Int, currentCursor: Int) -> [(Int, Int, String?)] {
+    func parse(_ tree: [String: Any], remaining: String, lastCursor: Int, currentCursor: Int) -> [(Int, Int, Any)] {
         if remaining.isEmpty {
             if convertEnding || tree.count == 1 {
                 if let nodeValue = tree[""] as? String {
-                    return [[lastCursor, currentCursor, nodeValue]]
+                    return [[lastCursor, currentCursor, nodeValue]] as! [(Int, Int, Any)]
                 }
                 return []
             }
-            return [[lastCursor, currentCursor, nil]]
+            return [[lastCursor, currentCursor, nil]] as! [(Int, Int, Any)]
         }
 
         if tree.count == 1 {
-            let nodeValue = tree[""] as? String
-            return [[lastCursor, currentCursor, nodeValue]] + newChunk(remaining, currentCursor: currentCursor)
+            let nodeValue = tree[""] as? String ?? ""
+            return ([[lastCursor, currentCursor, nodeValue]] + newChunk(remaining, currentCursor: currentCursor)) as! [(Int, Int, Any)]
         }
 
         guard let firstChar = remaining.first else { return [] }
@@ -66,8 +66,7 @@ func applyMapping(_ string: String, map mapping: [String: Any], optimize convert
             )
         }
 
-        let nodeValue = tree[""] as? String
-        return [[lastCursor, currentCursor, nodeValue]] + newChunk(remaining, currentCursor: currentCursor)
+        return ([[lastCursor, currentCursor, tree[""]]] + newChunk(remaining, currentCursor: currentCursor)) as! [(Int, Int, Any)]
     }
 
     return newChunk(string, currentCursor: 0)
@@ -121,7 +120,7 @@ func getSubTreeOf(_ tree: [String: Any], _ string: String) -> [String: Any] {
  * - Returns: Function that merges custom mapping with default mapping
  */
 func createCustomMapping(_ customMap: [String: String] = [:]) -> ([String: Any]) -> [String: Any] {
-    var customTree: [String: Any] = [:]
+    let customTree: [String: Any] = [:]
 
     for (roma, kana) in customMap {
         var subTree = customTree
