@@ -61,6 +61,6 @@ final class IsJapaneseTests {
     }
 
     @Test("accepts optional allowed chars") func acceptsAllowedChars() async throws {
-        #expect(WanaKana.isJapanese("≪偽括弧≫", allowedChars: "≪≫") == true)
+        #expect(WanaKana.isJapanese("≪偽括弧≫", allowed: "≪≫") == true)
     }
 }

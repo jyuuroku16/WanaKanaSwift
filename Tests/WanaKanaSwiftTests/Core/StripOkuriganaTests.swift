@@ -21,15 +21,29 @@ final class StripOkuriganaTests {
     }
 
     @Test("strips leading when passed optional config") func stripsLeading() async throws {
-        #expect(WanaKana.stripOkurigana("踏み込む", options: StripOkuriganaOptions(leading: true)) == "踏み込む")
-        #expect(WanaKana.stripOkurigana("お腹", options: StripOkuriganaOptions(leading: true)) == "腹")
-        #expect(WanaKana.stripOkurigana("お祝い", options: StripOkuriganaOptions(leading: true)) == "祝い")
+        #expect(WanaKana.stripOkurigana("踏み込む", options: [
+            "leading": true
+        ]) == "踏み込む")
+        #expect(WanaKana.stripOkurigana("お腹", options: [
+            "leading": true
+        ]) == "腹")
+        #expect(WanaKana.stripOkurigana("お祝い", options: [
+            "leading": true
+        ]) == "祝い")
     }
 
     @Test("strips reading by matching original word when passed matchKanji") func stripsReadingMatchKanji() async throws {
-        #expect(WanaKana.stripOkurigana("おはら", options: StripOkuriganaOptions(matchKanji: "お腹")) == "おはら")
-        #expect(WanaKana.stripOkurigana("ふみこむ", options: StripOkuriganaOptions(matchKanji: "踏み込む")) == "ふみこ")
-        #expect(WanaKana.stripOkurigana("おみまい", options: StripOkuriganaOptions(matchKanji: "お祝い", leading: true)) == "みまい")
-        #expect(WanaKana.stripOkurigana("おはら", options: StripOkuriganaOptions(matchKanji: "お腹", leading: true)) == "はら")
+        #expect(WanaKana.stripOkurigana("おはら", options: [
+            "matchKanji": "お腹"
+        ]) == "おはら")
+        #expect(WanaKana.stripOkurigana("ふみこむ", options: [
+            "matchKanji": "踏み込む"
+        ]) == "ふみこ")
+        #expect(WanaKana.stripOkurigana("おみまい", options: [
+            "matchKanji": "お祝い"
+        ]) == "みまい")
+        #expect(WanaKana.stripOkurigana("おはら", options: [
+            "matchKanji": "お腹"
+        ]) == "はら")
     }
 }

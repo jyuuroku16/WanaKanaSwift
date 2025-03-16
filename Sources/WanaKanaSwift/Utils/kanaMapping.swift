@@ -119,7 +119,7 @@ func getSubTreeOf(_ tree: [String: Any], _ string: String) -> [String: Any] {
  * - Parameter customMap: Custom mapping dictionary
  * - Returns: Function that merges custom mapping with default mapping
  */
-func createCustomMapping(_ customMap: [String: String] = [:]) -> ([String: Any]) -> [String: Any] {
+public func createCustomMapping(_ customMap: [String: String] = [:]) -> ([String: Any]) -> [String: Any] {
     let customTree: [String: Any] = [:]
 
     for (roma, kana) in customMap {
@@ -171,7 +171,7 @@ func createCustomMapping(_ customMap: [String: String] = [:]) -> ([String: Any])
  *   - customMapping: Custom mapping (function or dictionary)
  * - Returns: Merged mapping
  */
-func mergeCustomMapping(_ map: [String: Any], _ customMapping: Any?) -> [String: Any] {
+public func mergeCustomMapping(_ map: [String: Any], _ customMapping: Any?) -> [String: Any] {
     guard let customMapping = customMapping else { return map }
 
     if let customFunc = customMapping as? ([String: Any]) -> [String: Any] {
