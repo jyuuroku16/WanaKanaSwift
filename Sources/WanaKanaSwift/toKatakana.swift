@@ -19,7 +19,7 @@ import Foundation
  * // => "ヰ"
  * ```
  */
-@MainActor func _toKatakana(_ input: String = "", options: [String: Any] = [:]) -> String {
+func _toKatakana(_ input: String = "", options: [String: Any] = [:]) -> String {
     let mergedOptions = mergeWithDefaultOptions(options)
 
     if mergedOptions["passRomaji"] as? Bool == true {

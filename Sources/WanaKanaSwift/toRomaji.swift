@@ -1,9 +1,10 @@
 import Foundation
 
 // Cache for kana to romaji mapping
-@MainActor private var kanaToRomajiMapCache: [String: [String: String]] = [:]
-@MainActor private var lastRomanization: String?
-@MainActor private var lastCustomMapping: [String: String]?
+private let queue = DispatchQueue(label: "com.wanakana.cache")
+nonisolated(unsafe) private var kanaToRomajiMapCache: [String: [String: String]] = [:]
+nonisolated(unsafe) private var lastRomanization: String?
+nonisolated(unsafe) private var lastCustomMapping: [String: String]?
 
 /**
  * Creates a kana to romaji mapping tree
@@ -12,30 +13,32 @@ import Foundation
  *   - customRomajiMapping: Custom mapping overrides
  * - Returns: Mapping dictionary
  */
-@MainActor func createKanaToRomajiMap(
+func createKanaToRomajiMap(
     romanization: String,
     customRomajiMapping: [String: String]? = nil
 ) -> [String: String] {
-    // Check cache first
-    if romanization == lastRomanization &&
-        customRomajiMapping == lastCustomMapping,
-       let cached = kanaToRomajiMapCache[romanization] {
-        return cached
+    queue.sync {
+        // Check cache first
+        if romanization == lastRomanization &&
+            customRomajiMapping == lastCustomMapping,
+           let cached = kanaToRomajiMapCache[romanization] {
+            return cached
+        }
+        
+        // Create new mapping
+        var map = getKanaToRomajiTree(romanization: romanization)
+        
+        if let customMapping = customRomajiMapping {
+            map = mergeCustomMapping(map, customMapping)
+        }
+        
+        // Update cache
+        lastRomanization = romanization
+        lastCustomMapping = customRomajiMapping
+        kanaToRomajiMapCache[romanization] = map as? [String: String]
+        
+        return map as! [String: String]
     }
-    
-    // Create new mapping
-    var map = getKanaToRomajiTree(romanization: romanization)
-    
-    if let customMapping = customRomajiMapping {
-        map = mergeCustomMapping(map, customMapping)
-    }
-    
-    // Update cache
-    lastRomanization = romanization
-    lastCustomMapping = customRomajiMapping
-    kanaToRomajiMapCache[romanization] = map as? [String: String]
-    
-    return map as! [String: String]
 }
 
 /**
@@ -58,7 +61,7 @@ import Foundation
  * // => "tuzigili"
  * ```
  */
-@MainActor func _toRomaji(
+func _toRomaji(
     _ input: String = "",
     options: [String: Any] = [:],
     map: [String: String]? = nil
@@ -87,7 +90,7 @@ import Foundation
 /**
  * Split input into romaji tokens
  */
-@MainActor private func splitIntoRomaji(
+private func splitIntoRomaji(
     _ input: String,
     options: [String: Any],
     map: [String: String]

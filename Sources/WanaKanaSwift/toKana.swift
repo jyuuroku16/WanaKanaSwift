@@ -1,10 +1,11 @@
 import Foundation
 
 // Cache for romaji to kana mapping
-@MainActor private var romajiToKanaMapCache: [String: [String: String]] = [:]
-@MainActor private var lastIMEMode: Bool?
-@MainActor private var lastUseObsoleteKana: Bool?
-@MainActor private var lastCustomMapping: [String: String]?
+private let queue = DispatchQueue(label: "com.wanakana.cache")
+nonisolated(unsafe) private var romajiToKanaMapCache: [String: [String: String]] = [:]
+nonisolated(unsafe) private var lastIMEMode: Bool?
+nonisolated(unsafe) private var lastUseObsoleteKana: Bool?
+nonisolated(unsafe) private var lastCustomMapping: [String: String]?
 
 /**
  * Creates a romaji to kana mapping tree
@@ -14,41 +15,43 @@ import Foundation
  *   - customKanaMapping: Custom mapping overrides
  * - Returns: Mapping dictionary
  */
-@MainActor func createRomajiToKanaMap(
+func createRomajiToKanaMap(
     IMEMode: Bool,
     useObsoleteKana: Bool,
     customKanaMapping: [String: String]? = nil
 ) -> [String: String] {
-    // Check cache first
-    let cacheKey = "\(IMEMode)_\(useObsoleteKana)"
-    if IMEMode == lastIMEMode &&
-       useObsoleteKana == lastUseObsoleteKana &&
-       customKanaMapping == lastCustomMapping,
-       let cached = romajiToKanaMapCache[cacheKey] {
-        return cached
+    queue.sync {
+        // Check cache first
+        let cacheKey = "\(IMEMode)_\(useObsoleteKana)"
+        if IMEMode == lastIMEMode &&
+        useObsoleteKana == lastUseObsoleteKana &&
+        customKanaMapping == lastCustomMapping,
+        let cached = romajiToKanaMapCache[cacheKey] {
+            return cached
+        }
+
+        // Create new mapping
+        var map = getRomajiToKanaTree()
+
+        if IMEMode {
+            map = IME_MODE_MAP(map)
+        }
+        if useObsoleteKana {
+            map = USE_OBSOLETE_KANA_MAP(map)
+        }
+
+        if let customMapping = customKanaMapping {
+            map = mergeCustomMapping(map, customMapping)
+        }
+
+        // Update cache
+        lastIMEMode = IMEMode
+        lastUseObsoleteKana = useObsoleteKana
+        lastCustomMapping = customKanaMapping
+        romajiToKanaMapCache[cacheKey] = map as? [String: String]
+
+        return map as! [String: String]
     }
-
-    // Create new mapping
-    var map = getRomajiToKanaTree()
-
-    if IMEMode {
-        map = IME_MODE_MAP(map)
-    }
-    if useObsoleteKana {
-        map = USE_OBSOLETE_KANA_MAP(map)
-    }
-
-    if let customMapping = customKanaMapping {
-        map = mergeCustomMapping(map, customMapping)
-    }
-
-    // Update cache
-    lastIMEMode = IMEMode
-    lastUseObsoleteKana = useObsoleteKana
-    lastCustomMapping = customKanaMapping
-    romajiToKanaMapCache[cacheKey] = map as? [String: String]
-
-    return map as! [String: String]
 }
 
 /**
@@ -77,7 +80,7 @@ import Foundation
  * // => "わにbanaに"
  * ```
  */
-@MainActor func _toKana(
+func _toKana(
     _ input: String = "",
     options: [String: Any] = [:],
     map: [String: String]? = nil
@@ -125,7 +128,7 @@ import Foundation
  *   - map: Optional custom mapping
  * - Returns: Array of tokens with start, end, and kana
  */
-@MainActor func splitIntoConvertedKana(
+func splitIntoConvertedKana(
     _ input: String = "",
     options: [String: Any] = [:],
     map: [String: String]? = nil

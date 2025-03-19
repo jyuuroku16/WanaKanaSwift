@@ -30,19 +30,19 @@ public struct WanaKana {
     }
 
     // Conversion functions
-    @MainActor public static func toRomaji(_ input: String = "", options: [String: Any] = [:], map: [String: String]? = nil) -> String {
+    public static func toRomaji(_ input: String = "", options: [String: Any] = [:], map: [String: String]? = nil) -> String {
         return _toRomaji(input, options: options, map: map)
     }
 
-    @MainActor public static func toKana(_ input: String = "", options: [String: Any] = [:], map: [String: String]? = nil) -> String {
+    public static func toKana(_ input: String = "", options: [String: Any] = [:], map: [String: String]? = nil) -> String {
         return _toKana(input, options: options, map: map)
     }
 
-    @MainActor public static func toHiragana(_ input: String = "", options: [String: Any] = [:]) -> String {
+    public static func toHiragana(_ input: String = "", options: [String: Any] = [:]) -> String {
         return _toHiragana(input, options: options)
     }
 
-    @MainActor public static func toKatakana(_ input: String = "", options: [String: Any] = [:]) -> String {
+    public static func toKatakana(_ input: String = "", options: [String: Any] = [:]) -> String {
         return _toKatakana(input, options: options)
     }
 
@@ -51,7 +51,7 @@ public struct WanaKana {
         return _stripOkurigana(input, options: options)
     }
 
-    @MainActor public static func tokenize(_ input: String = "", options: [String: Bool] = [:]) -> Any {
+    public static func tokenize(_ input: String = "", options: [String: Bool] = [:]) -> Any {
         return _tokenize(input, options: options)
     }
 }

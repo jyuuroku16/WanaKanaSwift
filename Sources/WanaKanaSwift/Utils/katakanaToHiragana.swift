@@ -30,7 +30,7 @@ func isKanaAsSymbol(_ char: String) -> Bool {
  *   - options: Configuration options
  * - Returns: Converted text
  */
-@MainActor func katakanaToHiragana(
+func katakanaToHiragana(
     _ input: String = "",
     toRomaji: (String) -> String,
     config: [String: Any] = [:]

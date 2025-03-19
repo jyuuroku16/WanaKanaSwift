@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Constants
 
-@MainActor var kanaToHepburnMap: [String: Any]? = nil
+nonisolated(unsafe) var kanaToHepburnMap: [String: Any]? = nil
 
 // prettier-ignore
 private let BASIC_ROMAJI: [String: String] = [
@@ -90,7 +90,7 @@ private let SOKUON_WHITELIST = [
 
 // MARK: - Public Functions
 
-@MainActor func getKanaToRomajiTree(romanization: String) -> [String: Any] {
+func getKanaToRomajiTree(romanization: String) -> [String: Any] {
     switch romanization {
     case ROMANIZATIONS.HEPBURN:
         return getKanaToHepburnTree()
@@ -101,7 +101,7 @@ private let SOKUON_WHITELIST = [
 
 // MARK: - Private Functions
 
-@MainActor private func getKanaToHepburnTree() -> [String: Any] {
+private func getKanaToHepburnTree() -> [String: Any] {
     if kanaToHepburnMap == nil {
         kanaToHepburnMap = createKanaToHepburnMap()
     }

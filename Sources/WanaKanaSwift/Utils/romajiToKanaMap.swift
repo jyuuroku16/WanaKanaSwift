@@ -247,9 +247,9 @@ extension Dictionary {
     }
 }
 
-@MainActor var romajiToKanaMap: [String: Any]?
+nonisolated(unsafe) var romajiToKanaMap: [String: Any]?
 
-@MainActor func getRomajiToKanaTree() -> [String: Any] {
+func getRomajiToKanaTree() -> [String: Any] {
     if romajiToKanaMap == nil {
         romajiToKanaMap = createRomajiToKanaMap()
     }

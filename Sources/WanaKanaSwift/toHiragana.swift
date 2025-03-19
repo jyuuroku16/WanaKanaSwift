@@ -19,7 +19,7 @@ import Foundation
  * // => "ゐ"
  * ```
  */
-@MainActor func _toHiragana(_ input: String = "", options: [String: Any] = [:]) -> String {
+func _toHiragana(_ input: String = "", options: [String: Any] = [:]) -> String {
     let config = mergeWithDefaultOptions(options)
     
     if config["passRomaji"] as? Bool == true {
