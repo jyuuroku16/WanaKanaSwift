@@ -4,12 +4,12 @@ import Testing
 @Suite("ToKatakanaTests")
 final class ToKatakanaTests {
     @Test("sane defaults") func saneDefaults() async throws {
-        #expect(WanaKana.toKatakana() == "")
-        #expect(WanaKana.toKatakana("") == "")
+        #expect(WanaKana.toKatakana().isEmpty)
+        #expect(WanaKana.toKatakana("").isEmpty)
     }
 
     @Test("Quick Brown Fox - Romaji to Katakana") func quickBrownFox() async throws {
-        let options = ToKatakanaOptions(useObsoleteKana: true)
+        let options = ["useObsoleteKana": true]
         // https://en.wikipedia.org/wiki/Iroha
         // Even the colorful fragrant flowers'
         #expect(WanaKana.toKatakana("IROHANIHOHETO", options: options) == "イロハニホヘト")
@@ -36,15 +36,15 @@ final class ToKatakanaTests {
     }
 
     @Test("WI = ヰ when useObsoleteKana is true") func useObsoleteKanaWi() async throws {
-        #expect(WanaKana.toKatakana("wi", options: ToKatakanaOptions(useObsoleteKana: true)) == "ヰ")
+        #expect(WanaKana.toKatakana("wi", options: ["useObsoleteKana": true]) == "ヰ")
     }
 
     @Test("WE = ヱ when useObsoleteKana is true") func useObsoleteKanaWe() async throws {
-        #expect(WanaKana.toKatakana("we", options: ToKatakanaOptions(useObsoleteKana: true)) == "ヱ")
+        #expect(WanaKana.toKatakana("we", options: ["useObsoleteKana": true]) == "ヱ")
     }
 
     @Test("passRomaji false by default") func passRomajiDefault() async throws {
         #expect(WanaKana.toKatakana("only かな") == "オンly カナ")
-        #expect(WanaKana.toKatakana("only かな", options: ToKatakanaOptions(passRomaji: true)) == "only カナ")
+        #expect(WanaKana.toKatakana("only かな", options: ["passRomaji": true]) == "only カナ")
     }
 }

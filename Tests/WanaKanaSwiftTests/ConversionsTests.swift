@@ -61,7 +61,7 @@ final class ConversionsTests {
             let romaji = item[2]
 
             if !katakana.isEmpty {
-                let result = toRomaji(katakana)
+                let result = WanaKana.toRomaji(katakana)
                 #expect(result == romaji)
             }
         }
@@ -105,10 +105,10 @@ final class ConversionsTests {
 
     @Test("Converting kana to kana - Mixed syllabaries") func testKanaToKanaMixedSyllabaries() async throws {
         // It passes non-katakana through when passRomaji is true k -> h
-        #expect(WanaKana.toHiragana("座禅'zazen'スタイル", options: ToHiraganaOptions(passRomaji: true)) == "座禅'zazen'すたいる")
+        #expect(WanaKana.toHiragana("座禅'zazen'スタイル", options: ["passRomaji": true]) == "座禅'zazen'すたいる")
 
         // It passes non-hiragana through when passRomaji is true h -> k
-        #expect(WanaKana.toKatakana("座禅'zazen'すたいる", options: ToKatakanaOptions(passRomaji: true)) == "座禅'zazen'スタイル")
+        #expect(WanaKana.toKatakana("座禅'zazen'すたいる", options: ["passRomaji": true]) == "座禅'zazen'スタイル")
 
         // It converts non-katakana when passRomaji is false k -> h
         #expect(WanaKana.toHiragana("座禅'zazen'スタイル") == "座禅「ざぜん」すたいる")
@@ -119,11 +119,11 @@ final class ConversionsTests {
 
     @Test("Case sensitivity") func testCaseSensitivity() async throws {
         // Case doesn't matter for toHiragana()
-        #expect(WanaKana.toHiragana("aiueo") == toHiragana("AIUEO"))
+        #expect(WanaKana.toHiragana("aiueo") == WanaKana.toHiragana("AIUEO"))
         // Case doesn't matter for toKatakana()
-        #expect(WanaKana.toKatakana("aiueo") == toKatakana("AIUEO"))
+        #expect(WanaKana.toKatakana("aiueo") == WanaKana.toKatakana("AIUEO"))
         // Case DOES matter for toKana()
-        #expect(WanaKana.toKana("aiueo") != toKana("AIUEO"))
+        #expect(WanaKana.toKana("aiueo") != WanaKana.toKana("AIUEO"))
     }
 
     @Test("N edge cases") func testNEdgeCases() async throws {

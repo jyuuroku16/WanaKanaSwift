@@ -29,7 +29,7 @@ final class IsMixedTests {
     }
 
     @Test("お腹A is not mixed when passKanji is false") func respectsPassKanji() async throws {
-        #expect(WanaKana.isMixed("お腹A", options: Options(passKanji: false)) == false)
+        #expect(WanaKana.isMixed("お腹A", options: ["passKanji": false]) == false)
     }
 
     @Test("お腹 is not mixed") func kanjiAndKana() async throws {

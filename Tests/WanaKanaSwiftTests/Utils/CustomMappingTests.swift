@@ -16,7 +16,7 @@ final class CustomMappingTests {
     }
 
     @Test("applies customKanaMapping") func customKanaMapping() async throws {
-        let result = await WanaKana.toKana("wanakana", options: [
+        let result = WanaKana.toKana("wanakana", options: [
             "customKanaMapping": createCustomMapping([
                 "na": "に",
                 "ka": "Bana"
@@ -26,11 +26,11 @@ final class CustomMappingTests {
     }
 
     @Test("can't romanize with an invalid method") func invalidRomanization() async throws {
-        #expect(await WanaKana.toRomaji("つじぎり", options: ["romanization": "it's called rōmaji!!!"]) == "つじぎり")
+        #expect(WanaKana.toRomaji("つじぎり", options: ["romanization": "it's called rōmaji!!!"]) == "つじぎり")
     }
 
     @Test("applies customRomajiMapping") func customRomajiMapping() async throws {
-        let result = await WanaKana.toRomaji("つじぎり", options: [
+        let result = WanaKana.toRomaji("つじぎり", options: [
             "customRomajiMapping": createCustomMapping([
                 "じ": "zi",
                 "つ": "tu",
@@ -41,7 +41,7 @@ final class CustomMappingTests {
     }
 
     @Test("will replace previous custom mappings") func replacePreviousMappings() async throws {
-        var result = await WanaKana.toRomaji("つじぎり", options: [
+        var result = WanaKana.toRomaji("つじぎり", options: [
             "customRomajiMapping": createCustomMapping([
                 "じ": "zi",
                 "つ": "tu",
@@ -50,7 +50,7 @@ final class CustomMappingTests {
         ])
         #expect(result == "tuzigili")
 
-        result = await WanaKana.toRomaji("つじぎり", options: [
+        result = WanaKana.toRomaji("つじぎり", options: [
             "customRomajiMapping": createCustomMapping([
                 "じ": "bi",
                 "つ": "bu",
@@ -59,7 +59,7 @@ final class CustomMappingTests {
         ])
         #expect(result == "bubigibi")
 
-        result = await WanaKana.toKana("wanakana", options: [
+        result = WanaKana.toKana("wanakana", options: [
             "customKanaMapping": createCustomMapping([
                 "na": "に",
                 "ka": "Bana"
@@ -67,7 +67,7 @@ final class CustomMappingTests {
         ])
         #expect(result == "わにBanaに")
 
-        result = await WanaKana.toKana("wanakana", options: [
+        result = WanaKana.toKana("wanakana", options: [
             "customKanaMapping": createCustomMapping([
                 "na": "り",
                 "ka": "Cabana"
@@ -77,7 +77,7 @@ final class CustomMappingTests {
     }
 
     @Test("will accept a plain object and merge it internally via createCustomMapping()") func acceptPlainObject() async throws {
-        var result = await WanaKana.toKana("wanakana", options: [
+        var result = WanaKana.toKana("wanakana", options: [
             "customKanaMapping": [
                 "na": "に",
                 "ka": "Bana"
@@ -85,7 +85,7 @@ final class CustomMappingTests {
         ])
         #expect(result == "わにBanaに")
 
-        result = await WanaKana.toRomaji("つじぎり", options: [
+        result = WanaKana.toRomaji("つじぎり", options: [
             "customRomajiMapping": [
                 "じ": "zi",
                 "つ": "tu",

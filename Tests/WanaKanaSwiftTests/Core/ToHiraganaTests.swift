@@ -9,7 +9,7 @@ final class ToHiraganaTests {
     }
 
     @Test("Quick Brown Fox - Romaji to Hiragana") func quickBrownFox() async throws {
-        let options = ToHiraganaOptions(useObsoleteKana: true)
+        let options = ["useObsoleteKana": true]
         // https://en.wikipedia.org/wiki/Iroha
         // Even the colorful fragrant flowers'
         #expect(WanaKana.toHiragana("IROHANIHOHETO", options: options) == "いろはにほへと")
@@ -36,20 +36,20 @@ final class ToHiraganaTests {
     }
 
     @Test("wi = ゐ when useObsoleteKana is true") func useObsoleteKanaWi() async throws {
-        #expect(WanaKana.toHiragana("wi", options: ToHiraganaOptions(useObsoleteKana: true)) == "ゐ")
+        #expect(WanaKana.toHiragana("wi", options: ["useObsoleteKana": true]) == "ゐ")
     }
 
     @Test("we = ゑ when useObsoleteKana is true") func useObsoleteKanaWe() async throws {
-        #expect(WanaKana.toHiragana("we", options: ToHiraganaOptions(useObsoleteKana: true)) == "ゑ")
+        #expect(WanaKana.toHiragana("we", options: ["useObsoleteKana": true]) == "ゑ")
     }
 
     @Test("wi = うぃ when useObsoleteKana is false") func useObsoleteKanaWiFalse() async throws {
-        #expect(WanaKana.toHiragana("wi", options: ToHiraganaOptions(useObsoleteKana: false)) == "うぃ")
+        #expect(WanaKana.toHiragana("wi", options: ["useObsoleteKana": false]) == "うぃ")
     }
 
     @Test("passRomaji false by default") func passRomajiDefault() async throws {
         #expect(WanaKana.toHiragana("only カナ") == "おんly かな")
-        #expect(WanaKana.toHiragana("only カナ", options: ToHiraganaOptions(passRomaji: true)) == "only かな")
+        #expect(WanaKana.toHiragana("only カナ", options: ["passRomaji": true]) == "only かな")
     }
 
     @Test("convertLongVowelMark when true") func convertLongVowelMarkTrue() async throws {
@@ -58,7 +58,7 @@ final class ToHiraganaTests {
     }
 
     @Test("convertLongVowelMark when false") func convertLongVowelMarkFalse() async throws {
-        #expect(WanaKana.toHiragana("ラーメン", options: ToHiraganaOptions(convertLongVowelMark: false)) == "らーめん")
+        #expect(WanaKana.toHiragana("ラーメン", options: ["convertLongVowelMark": false]) == "らーめん")
     }
 
     @Test("mixed input") func mixedInput() async throws {

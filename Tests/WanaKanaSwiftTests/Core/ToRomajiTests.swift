@@ -25,11 +25,11 @@ final class ToRomajiTests {
     }
 
     @Test("Use the upcaseKatakana flag to preserve casing for katakana") func upcaseKatakanaFlag() async throws {
-        #expect(WanaKana.toRomaji("ワニカニ", options: ToRomajiOptions(upcaseKatakana: true)) == "WANIKANI")
+        #expect(WanaKana.toRomaji("ワニカニ", options: ["upcaseKatakana": true]) == "WANIKANI")
     }
 
     @Test("Use the upcaseKatakana flag to preserve casing for mixed kana") func upcaseKatakanaMixed() async throws {
-        #expect(WanaKana.toRomaji("ワニカニ　が　すごい　だ", options: ToRomajiOptions(upcaseKatakana: true)) == "WANIKANI ga sugoi da")
+        #expect(WanaKana.toRomaji("ワニカニ　が　すごい　だ", options: ["upcaseKatakana": true]) == "WANIKANI ga sugoi da")
     }
 
     @Test("Converts long dash 'ー' in hiragana to hyphen") func longDashToHyphen() async throws {
