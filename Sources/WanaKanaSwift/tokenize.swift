@@ -39,7 +39,7 @@ func isCharEnNum(_ char: String) -> Bool {
  *   - compact: Whether to use compact type checking
  * - Returns: Token type
  */
-func getType(_ input: String, compact: Bool = false) -> TokenType {
+func getType(_ input: String = "", compact: Bool = false) -> TokenType {
     if compact {
         switch true {
         case isCharJaNum(input): return .other

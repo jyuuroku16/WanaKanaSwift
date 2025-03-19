@@ -6,8 +6,8 @@ final class TokenizeTests {
     @Test("sane defaults") func saneDefaults() async throws {
         #expect(WanaKana.tokenize() == [])
         #expect(WanaKana.tokenize("") == [])
-        #expect(getType(nil) == "other")
-        #expect(getType("") == "other")
+        #expect(getType() == .other)
+        #expect(getType("") == .other)
     }
 
     @Test("basic tests") func basicTests() async throws {
@@ -41,7 +41,7 @@ final class TokenizeTests {
     }
 
     @Test("compact option") func compactOption() async throws {
-        #expect(WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", options: TokenizeOptions(compact: true)) == [
+        #expect(WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", options: ["compact": true]) == [
             "5",
             "romaji here",
             "...!?",
@@ -55,39 +55,39 @@ final class TokenizeTests {
     }
 
     @Test("detailed option") func detailedOption() async throws {
-        let result = WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", options: TokenizeOptions(detailed: true))
+        let result = WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", options: ["detailed": true])
         #expect(result == [
-            TokenDetail(type: "englishNumeral", value: "5"),
-            TokenDetail(type: "en", value: "romaji"),
-            TokenDetail(type: "space", value: " "),
-            TokenDetail(type: "en", value: "here"),
-            TokenDetail(type: "englishPunctuation", value: "...!?"),
-            TokenDetail(type: "kanji", value: "人々漢字"),
-            TokenDetail(type: "hiragana", value: "ひらがな"),
-            TokenDetail(type: "katakana", value: "カタ"),
-            TokenDetail(type: "space", value: "　"),
-            TokenDetail(type: "katakana", value: "カナ"),
-            TokenDetail(type: "japaneseNumeral", value: "４"),
-            TokenDetail(type: "japanesePunctuation", value: "「"),
-            TokenDetail(type: "ja", value: "ＳＨＩＯ"),
-            TokenDetail(type: "japanesePunctuation", value: "」。！"),
-            TokenDetail(type: "space", value: " "),
-            TokenDetail(type: "other", value: "لنذهب")
+            Token(type: .enNum, value: "5"),
+            Token(type: .en, value: "romaji"),
+            Token(type: .space, value: " "),
+            Token(type: .en, value: "here"),
+            Token(type: .enPunc, value: "...!?"),
+            Token(type: .kanji, value: "人々漢字"),
+            Token(type: .hiragana, value: "ひらがな"),
+            Token(type: .katakana, value: "カタ"),
+            Token(type: .space, value: "　"),
+            Token(type: .katakana, value: "カナ"),
+            Token(type: .jaNum, value: "４"),
+            Token(type: .jaPunc, value: "「"),
+            Token(type: .ja, value: "ＳＨＩＯ"),
+            Token(type: .jaPunc, value: "」。！"),
+            Token(type: .space, value: " "),
+            Token(type: .other, value: "لنذهب")
         ])
     }
 
     @Test("compact and detailed options") func compactAndDetailedOptions() async throws {
-        let result = WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", options: TokenizeOptions(compact: true, detailed: true))
+        let result = WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", options: ["compact": true, "detailed": true])
         #expect(result == [
-            TokenDetail(type: "other", value: "5"),
-            TokenDetail(type: "en", value: "romaji here"),
-            TokenDetail(type: "other", value: "...!?"),
-            TokenDetail(type: "ja", value: "人々漢字ひらがなカタ　カナ"),
-            TokenDetail(type: "other", value: "４「"),
-            TokenDetail(type: "ja", value: "ＳＨＩＯ"),
-            TokenDetail(type: "other", value: "」。！"),
-            TokenDetail(type: "en", value: " "),
-            TokenDetail(type: "other", value: "لنذهب")
+            Token(type: .other, value: "5"),
+            Token(type: .en, value: "romaji here"),
+            Token(type: .other, value: "...!?"),
+            Token(type: .ja, value: "人々漢字ひらがなカタ　カナ"),
+            Token(type: .other, value: "４「"),
+            Token(type: .ja, value: "ＳＨＩＯ"),
+            Token(type: .other, value: "」。！"),
+            Token(type: .en, value: " "),
+            Token(type: .other, value: "لنذهب")
         ])
     }
 }
