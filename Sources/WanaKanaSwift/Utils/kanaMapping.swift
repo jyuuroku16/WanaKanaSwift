@@ -38,20 +38,20 @@ func applyMapping(_ string: String, map mapping: [String: Any], optimize convert
         ) as! [(Int, Int, String?)]
     }
 
-    func parse(_ tree: [String: Any], remaining: String, lastCursor: Int, currentCursor: Int) -> [(Int, Int, Any)] {
+    func parse(_ tree: [String: Any], remaining: String, lastCursor: Int, currentCursor: Int) -> [(Int, Int, Any?)] {
         if remaining.isEmpty {
             if convertEnding || tree.count == 1 {
                 if let nodeValue = tree[""] as? String {
-                    return [[lastCursor, currentCursor, nodeValue]] as! [(Int, Int, Any)]
+                    return [(lastCursor, currentCursor, nodeValue)]
                 }
                 return []
             }
-            return [[lastCursor, currentCursor, nil]] as! [(Int, Int, Any)]
+            return [(lastCursor, currentCursor, nil)]
         }
 
         if tree.count == 1 {
             let nodeValue = tree[""] as? String ?? ""
-            return ([[lastCursor, currentCursor, nodeValue]] + newChunk(remaining, currentCursor: currentCursor)) as! [(Int, Int, Any)]
+            return [(lastCursor, currentCursor, nodeValue)] + newChunk(remaining, currentCursor: currentCursor)
         }
 
         guard let firstChar = remaining.first else { return [] }

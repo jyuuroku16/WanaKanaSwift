@@ -4,25 +4,25 @@ import Testing
 @Suite("TokenizeTests")
 final class TokenizeTests {
     @Test("sane defaults") func saneDefaults() async throws {
-        #expect(WanaKana.tokenize() == [])
-        #expect(WanaKana.tokenize("") == [])
+        #expect(areTokenArraysEqual(WanaKana.tokenize(), []))
+        #expect(areTokenArraysEqual(WanaKana.tokenize(""), []))
         #expect(getType() == .other)
         #expect(getType("") == .other)
     }
 
     @Test("basic tests") func basicTests() async throws {
-        #expect(WanaKana.tokenize("ふふ") == ["ふふ"])
-        #expect(WanaKana.tokenize("フフ") == ["フフ"])
-        #expect(WanaKana.tokenize("ふふフフ") == ["ふふ", "フフ"])
-        #expect(WanaKana.tokenize("阮咸") == ["阮咸"])
-        #expect(WanaKana.tokenize("人々") == ["人々"])
-        #expect(WanaKana.tokenize("感じ") == ["感", "じ"])
-        #expect(WanaKana.tokenize("私は悲しい") == ["私", "は", "悲", "しい"])
-        #expect(WanaKana.tokenize("ok لنذهب!") == ["ok", " ", "لنذهب", "!"])
+        #expect(areTokenArraysEqual(WanaKana.tokenize("ふふ"), ["ふふ"]))
+        #expect(areTokenArraysEqual(WanaKana.tokenize("フフ"), ["フフ"]))
+        #expect(areTokenArraysEqual(WanaKana.tokenize("ふふフフ"), ["ふふ", "フフ"]))
+        #expect(areTokenArraysEqual(WanaKana.tokenize("阮咸"), ["阮咸"]))
+        #expect(areTokenArraysEqual(WanaKana.tokenize("人々"), ["人々"]))
+        #expect(areTokenArraysEqual(WanaKana.tokenize("感じ"), ["感", "じ"]))
+        #expect(areTokenArraysEqual(WanaKana.tokenize("私は悲しい"), ["私", "は", "悲", "しい"]))
+        #expect(areTokenArraysEqual(WanaKana.tokenize("ok لنذهب!"), ["ok", " ", "لنذهب", "!"]))
     }
 
     @Test("handles mixed input") func mixedInput() async throws {
-        #expect(WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！") == [
+        #expect(areTokenArraysEqual(WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！"), [
             "5",
             "romaji",
             " ",
@@ -37,11 +37,11 @@ final class TokenizeTests {
             "「",
             "ＳＨＩＯ",
             "」。！"
-        ])
+        ]))
     }
 
     @Test("compact option") func compactOption() async throws {
-        #expect(WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", options: ["compact": true]) == [
+        #expect(areTokenArraysEqual(WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", options: ["compact": true]), [
             "5",
             "romaji here",
             "...!?",
@@ -51,12 +51,12 @@ final class TokenizeTests {
             "」。！",
             " ",
             "لنذهب"
-        ])
+        ]))
     }
 
     @Test("detailed option") func detailedOption() async throws {
         let result = WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", options: ["detailed": true])
-        #expect(result == [
+        #expect(areTokenArraysEqual(result, [
             Token(type: .enNum, value: "5"),
             Token(type: .en, value: "romaji"),
             Token(type: .space, value: " "),
@@ -73,12 +73,12 @@ final class TokenizeTests {
             Token(type: .jaPunc, value: "」。！"),
             Token(type: .space, value: " "),
             Token(type: .other, value: "لنذهب")
-        ])
+        ]))
     }
 
     @Test("compact and detailed options") func compactAndDetailedOptions() async throws {
         let result = WanaKana.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", options: ["compact": true, "detailed": true])
-        #expect(result == [
+        #expect(areTokenArraysEqual(result, [
             Token(type: .other, value: "5"),
             Token(type: .en, value: "romaji here"),
             Token(type: .other, value: "...!?"),
@@ -88,6 +88,6 @@ final class TokenizeTests {
             Token(type: .other, value: "」。！"),
             Token(type: .en, value: " "),
             Token(type: .other, value: "لنذهب")
-        ])
+        ]))
     }
 }

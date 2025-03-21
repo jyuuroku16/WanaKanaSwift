@@ -9,7 +9,15 @@ import Foundation
  * - Returns: A new substring
  */
 func getChunk(_ text: String = "", start: Int = 0, end: Int? = nil) -> String {
-    let startIndex = text.index(text.startIndex, offsetBy: max(0, start))
-    let endIndex = end.map { text.index(text.startIndex, offsetBy: min($0, text.count)) } ?? text.endIndex
+    guard !text.isEmpty else { return "" }
+    
+    let safeStart = max(0, min(start, text.count))
+    let safeEnd = min(end ?? text.count, text.count)
+    
+    guard safeStart < safeEnd else { return "" }
+    
+    let startIndex = text.index(text.startIndex, offsetBy: safeStart)
+    let endIndex = text.index(text.startIndex, offsetBy: safeEnd)
+    
     return String(text[startIndex..<endIndex])
 }

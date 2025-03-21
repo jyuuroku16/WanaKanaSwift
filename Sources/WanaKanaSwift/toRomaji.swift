@@ -16,7 +16,7 @@ nonisolated(unsafe) private var lastCustomMapping: [String: String]?
 func createKanaToRomajiMap(
     romanization: String,
     customRomajiMapping: [String: String]? = nil
-) -> [String: String] {
+) -> [String: String]? {
     queue.sync {
         // Check cache first
         if romanization == lastRomanization &&
@@ -37,7 +37,7 @@ func createKanaToRomajiMap(
         lastCustomMapping = customRomajiMapping
         kanaToRomajiMapCache[romanization] = map as? [String: String]
         
-        return map as! [String: String]
+        return map as? [String: String]
     }
 }
 
@@ -68,7 +68,7 @@ func _toRomaji(
 ) -> String {
     let config = mergeWithDefaultOptions(options)
     
-    let romajiMap: [String: String]
+    let romajiMap: [String: String]?
     if let customMap = map {
         romajiMap = customMap
     } else {
@@ -78,7 +78,7 @@ func _toRomaji(
         )
     }
     
-    return splitIntoRomaji(input, options: config, map: romajiMap)
+    return splitIntoRomaji(input, options: config, map: romajiMap ?? [:])
         .map { (start, end, romaji) in
             let slice = String(input[input.index(input.startIndex, offsetBy: start)..<input.index(input.startIndex, offsetBy: end)])
             let makeUpperCase = (config["upcaseKatakana"] as? Bool ?? false) && _isKatakana(slice)

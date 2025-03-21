@@ -30,7 +30,8 @@ func _isJapanese(_ input: String = "", allowed: String? = nil) -> Bool {
 
     let regex: NSRegularExpression?
     if let pattern = allowed {
-        regex = try? NSRegularExpression(pattern: pattern, options: [])
+        let escapedPattern = "[" + NSRegularExpression.escapedPattern(for: pattern) + "]"
+        regex = try? NSRegularExpression(pattern: escapedPattern, options: [])
     } else {
         regex = nil
     }

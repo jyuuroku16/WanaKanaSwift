@@ -1,7 +1,7 @@
 import Foundation
 
 // Token type definitions
-enum TokenType: String {
+enum TokenType: String, Equatable {
     case en = "en"
     case ja = "ja"
     case enNum = "englishNumeral"
@@ -71,7 +71,7 @@ func getType(_ input: String = "", compact: Bool = false) -> TokenType {
 }
 
 // Token structure for detailed output
-struct Token {
+public struct Token: Equatable {
     let type: TokenType
     let value: String
 }
@@ -101,7 +101,7 @@ struct Token {
  * // ["truly ", "私は悲しい"]
  * ```
  */
-func _tokenize(_ input: String = "", options: [String: Bool] = [:]) -> Any {
+func _tokenize(_ input: String = "", options: [String: Bool] = [:]) -> [Any] {
     let compact = options["compact"] ?? false
     let detailed = options["detailed"] ?? false
     

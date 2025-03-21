@@ -51,7 +51,7 @@ public struct WanaKana {
         return _stripOkurigana(input, options: options)
     }
 
-    public static func tokenize(_ input: String = "", options: [String: Bool] = [:]) -> Any {
+    public static func tokenize(_ input: String = "", options: [String: Bool] = [:]) -> [Any] {
         return _tokenize(input, options: options)
     }
 }

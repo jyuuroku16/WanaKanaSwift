@@ -19,7 +19,7 @@ func createRomajiToKanaMap(
     IMEMode: Bool,
     useObsoleteKana: Bool,
     customKanaMapping: [String: String]? = nil
-) -> [String: String] {
+) -> [String: String]? {
     queue.sync {
         // Check cache first
         let cacheKey = "\(IMEMode)_\(useObsoleteKana)"
@@ -50,7 +50,7 @@ func createRomajiToKanaMap(
         lastCustomMapping = customKanaMapping
         romajiToKanaMapCache[cacheKey] = map as? [String: String]
 
-        return map as! [String: String]
+        return map as? [String: String]
     }
 }
 
@@ -86,7 +86,7 @@ func _toKana(
     map: [String: String]? = nil
 ) -> String {
     let config: [String: Any]
-    let kanaMap: [String: String]
+    let kanaMap: [String: String]?
 
     if let customMap = map {
         config = options
@@ -138,6 +138,7 @@ func splitIntoConvertedKana(
     let customKanaMapping = options["customKanaMapping"] as? [String: String]
 
     let kanaMap: [String: String]
+
     if let customMap = map {
         kanaMap = customMap
     } else {
@@ -145,7 +146,7 @@ func splitIntoConvertedKana(
             IMEMode: IMEMode,
             useObsoleteKana: useObsoleteKana,
             customKanaMapping: customKanaMapping
-        )
+        ) ?? [:]
     }
 
     return applyMapping(input.lowercased(), map: kanaMap, optimize: !IMEMode)
