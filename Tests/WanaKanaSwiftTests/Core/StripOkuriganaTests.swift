@@ -40,10 +40,12 @@ final class StripOkuriganaTests {
             "matchKanji": "踏み込む"
         ]) == "ふみこ")
         #expect(WanaKana.stripOkurigana("おみまい", options: [
-            "matchKanji": "お祝い"
+            "matchKanji": "お祝い",
+            "leading": true
         ]) == "みまい")
         #expect(WanaKana.stripOkurigana("おはら", options: [
-            "matchKanji": "お腹"
+            "matchKanji": "お腹",
+            "leading": true
         ]) == "はら")
     }
 }
