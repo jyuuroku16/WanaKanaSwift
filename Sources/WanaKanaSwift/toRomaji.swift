@@ -44,7 +44,7 @@ func createKanaToRomajiMap(
 func _toRomaji(
     _ input: String = "",
     options: [String: Any] = [:],
-    map: [String: String]? = nil
+    map: [String: Any]? = nil
 ) -> String {
     let config = mergeWithDefaultOptions(options)
     
@@ -77,7 +77,7 @@ private func splitIntoRomaji(
     var config = options
     config["isDestinationRomaji"] = true
     let wrappedToRomaji: (String) -> String = { input in
-        _toRomaji(input, options: config, map: nil)
+        _toRomaji(input, options: [:], map: nil)
     }
     
     let mapping = applyMapping(

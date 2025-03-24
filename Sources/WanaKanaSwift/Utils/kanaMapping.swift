@@ -19,26 +19,30 @@ func applyMapping(_ string: String, map mapping: [String: Any], optimize convert
         }
         return result
     }
-
+    
     func newChunk(_ remaining: String, currentCursor: Int) -> [(Int, Int, String?)] {
         guard let firstChar = remaining.first else { return [] }
         let firstCharString = String(firstChar)
-
+        
         var initialTree: [String: Any] = [:]
         if let subtree = root[firstCharString] as? [String: Any] {
             initialTree = subtree
+            if initialTree[""] == nil {
+                initialTree[""] = firstCharString
+            }
+        } else {
+            initialTree[""] = firstCharString
         }
-        initialTree[""] = firstCharString
-
+        
         return parse(
             initialTree,
             remaining: String(remaining.dropFirst()),
             lastCursor: currentCursor,
             currentCursor: currentCursor + 1
-        ) as! [(Int, Int, String?)]
+        )
     }
-
-    func parse(_ tree: [String: Any], remaining: String, lastCursor: Int, currentCursor: Int) -> [(Int, Int, Any?)] {
+    
+    func parse(_ tree: [String: Any], remaining: String, lastCursor: Int, currentCursor: Int) -> [(Int, Int, String?)] {
         if remaining.isEmpty {
             if convertEnding || tree.count == 1 {
                 if let nodeValue = tree[""] as? String {
@@ -48,15 +52,15 @@ func applyMapping(_ string: String, map mapping: [String: Any], optimize convert
             }
             return [(lastCursor, currentCursor, nil)]
         }
-
+        
         if tree.count == 1 {
             let nodeValue = tree[""] as? String ?? ""
             return [(lastCursor, currentCursor, nodeValue)] + newChunk(remaining, currentCursor: currentCursor)
         }
-
+        
         guard let firstChar = remaining.first else { return [] }
         let firstCharString = String(firstChar)
-
+        
         if let subtree = nextSubtree(tree, nextChar: firstCharString) {
             return parse(
                 subtree,
@@ -65,10 +69,13 @@ func applyMapping(_ string: String, map mapping: [String: Any], optimize convert
                 currentCursor: currentCursor + 1
             )
         }
-
-        return ([[lastCursor, currentCursor, tree[""]]] + newChunk(remaining, currentCursor: currentCursor)) as! [(Int, Int, Any)]
+        
+        let nodeValue = tree[""] as? String
+        let current = [(lastCursor, currentCursor, nodeValue)]
+        let next = newChunk(remaining, currentCursor: currentCursor)
+        return current + next
     }
-
+    
     return newChunk(string, currentCursor: 0)
 }
 
@@ -79,7 +86,7 @@ func applyMapping(_ string: String, map mapping: [String: Any], optimize convert
  */
 func transform(_ tree: [String: Any]) -> [String: Any] {
     var map: [String: Any] = [:]
-
+    
     for (char, subtree) in tree {
         if let stringValue = subtree as? String {
             map[char] = ["": stringValue]
@@ -87,7 +94,7 @@ func transform(_ tree: [String: Any]) -> [String: Any] {
             map[char] = transform(dictValue)
         }
     }
-
+    
     return map
 }
 
@@ -100,7 +107,7 @@ func transform(_ tree: [String: Any]) -> [String: Any] {
  */
 func getSubTreeOf(_ tree: [String: Any], _ string: String) -> [String: Any] {
     var currentTree = tree
-
+    
     for char in string {
         let charString = String(char)
         if currentTree[charString] == nil {
@@ -110,7 +117,7 @@ func getSubTreeOf(_ tree: [String: Any], _ string: String) -> [String: Any] {
             currentTree = subtree
         }
     }
-
+    print(currentTree)
     return currentTree
 }
 
@@ -121,10 +128,10 @@ func getSubTreeOf(_ tree: [String: Any], _ string: String) -> [String: Any] {
  */
 public func createCustomMapping(_ customMap: [String: String] = [:]) -> ([String: Any]) -> [String: Any] {
     let customTree: [String: Any] = [:]
-
+    
     for (roma, kana) in customMap {
         var subTree = customTree
-
+        
         for char in roma {
             let charString = String(char)
             if subTree[charString] == nil {
@@ -134,16 +141,16 @@ public func createCustomMapping(_ customMap: [String: String] = [:]) -> ([String
                 subTree = nextTree
             }
         }
-
+        
         subTree[""] = kana
     }
-
+    
     return { map in
         let mapCopy = map // In Swift, dictionaries are value types, so no need for deep copy
-
+        
         func transformMap(_ mapSubtree: [String: Any]?, _ customSubtree: [String: Any]) -> [String: Any] {
             guard let mapSubtree = mapSubtree else { return customSubtree }
-
+            
             var newSubtree = mapSubtree
             for (char, subtree) in customSubtree {
                 if let customDict = subtree as? [String: Any] {
@@ -156,10 +163,10 @@ public func createCustomMapping(_ customMap: [String: String] = [:]) -> ([String
                     newSubtree[char] = subtree
                 }
             }
-
+            
             return newSubtree
         }
-
+        
         return transformMap(mapCopy, customTree)
     }
 }
@@ -173,12 +180,12 @@ public func createCustomMapping(_ customMap: [String: String] = [:]) -> ([String
  */
 public func mergeCustomMapping(_ map: [String: Any], _ customMapping: Any?) -> [String: Any] {
     guard let customMapping = customMapping else { return map }
-
+    
     if let customFunc = customMapping as? ([String: Any]) -> [String: Any] {
         return customFunc(map)
     } else if let customDict = customMapping as? [String: String] {
         return createCustomMapping(customDict)(map)
     }
-
+    
     return map
 }

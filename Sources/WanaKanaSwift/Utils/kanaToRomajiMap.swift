@@ -35,8 +35,8 @@ fileprivate let SPECIAL_SYMBOLS: [String: String] = [
     "？": "?",
     "〜": "~",
     "ー": "-",
-    "「": "'",
-    "」": "'",
+    "「": "\"",
+    "」": "\"",
     "『": "\"",
     "』": "\"",
     "［": "[",
@@ -119,14 +119,12 @@ private func createKanaToHepburnMap() -> [String: Any] {
     }
 
     let setTrans = { (string: String, transliteration: String) in
-        var subtree = subtreeOf(string)
-        subtree[""] = transliteration
+        romajiTree = setSubTreeValue(romajiTree, string, transliteration)
     }
 
     // Add special symbols
     for (jsymbol, symbol) in SPECIAL_SYMBOLS {
-        var subtree = subtreeOf(jsymbol)
-        subtree[""] = symbol
+        setTrans(jsymbol, symbol)
     }
 
     // Add small y and aiueo
@@ -193,4 +191,27 @@ private func resolveTsu(_ tree: [String: Any]) -> [String: Any] {
     }
 
     return tsuTree
-} 
+}
+
+private func setSubTreeValue(_ tree: [String: Any], _ path: String, _ value: String) -> [String: Any] {
+    var newTree = tree
+    
+    if path.isEmpty {
+        newTree[""] = value
+        return newTree
+    }
+    
+    let firstChar = String(path.first!)
+    let restPath = String(path.dropFirst())
+    
+    if newTree[firstChar] == nil {
+        newTree[firstChar] = [String: Any]()
+    }
+    
+    if var subTree = newTree[firstChar] as? [String: Any] {
+        subTree = setSubTreeValue(subTree, restPath, value)
+        newTree[firstChar] = subTree
+    }
+    
+    return newTree
+}
