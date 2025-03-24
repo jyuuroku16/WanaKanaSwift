@@ -13,11 +13,7 @@ func applyMapping(_ string: String, map mapping: [String: Any], optimize convert
 
     func nextSubtree(_ tree: [String: Any], nextChar: String) -> [String: Any]? {
         guard let subtree = tree[nextChar] as? [String: Any] else { return nil }
-        var result = subtree
-        if let nodeValue = tree[""] as? String {
-            result[""] = nodeValue + nextChar
-        }
-        return result
+        return subtree
     }
     
     func newChunk(_ remaining: String, currentCursor: Int) -> [(Int, Int, String?)] {
