@@ -1,11 +1,5 @@
 import Foundation
 
-// Cache for kana to romaji mapping
-private let queue = DispatchQueue(label: "com.wanakana.cache")
-nonisolated(unsafe) private var kanaToRomajiMapCache: [String: [String: String]] = [:]
-nonisolated(unsafe) private var lastRomanization: String?
-nonisolated(unsafe) private var lastCustomMapping: [String: String]?
-
 /**
  * Creates a kana to romaji mapping tree
  * - Parameters:
@@ -16,29 +10,15 @@ nonisolated(unsafe) private var lastCustomMapping: [String: String]?
 func createKanaToRomajiMap(
     romanization: String,
     customRomajiMapping: [String: String]? = nil
-) -> [String: String]? {
-    queue.sync {
-        // Check cache first
-        if romanization == lastRomanization &&
-            customRomajiMapping == lastCustomMapping,
-           let cached = kanaToRomajiMapCache[romanization] {
-            return cached
-        }
-        
-        // Create new mapping
-        var map = getKanaToRomajiTree(romanization: romanization)
-        
-        if let customMapping = customRomajiMapping {
-            map = mergeCustomMapping(map, customMapping)
-        }
-        
-        // Update cache
-        lastRomanization = romanization
-        lastCustomMapping = customRomajiMapping
-        kanaToRomajiMapCache[romanization] = map as? [String: String]
-        
-        return map as? [String: String]
+) -> [String: Any]? {
+    // Create new mapping
+    var map = getKanaToRomajiTree(romanization: romanization)
+    
+    if let customMapping = customRomajiMapping {
+        map = mergeCustomMapping(map, customMapping)
     }
+    
+    return map
 }
 
 /**
@@ -68,12 +48,11 @@ func _toRomaji(
 ) -> String {
     let config = mergeWithDefaultOptions(options)
     
-    let romajiMap: [String: String]?
-    if let customMap = map {
-        romajiMap = customMap
-    } else {
+    var romajiMap: [String: Any]?
+    romajiMap = map
+    if romajiMap == nil {
         romajiMap = createKanaToRomajiMap(
-            romanization: config["romanization"] as? String ?? ROMANIZATIONS.HEPBURN,
+            romanization: config["romanization"] as? String ?? "",
             customRomajiMapping: config["customRomajiMapping"] as? [String: String]
         )
     }
@@ -93,7 +72,7 @@ func _toRomaji(
 private func splitIntoRomaji(
     _ input: String,
     options: [String: Any],
-    map: [String: String]
+    map: [String: Any]
 ) -> [(Int, Int, String)] {
     var config = options
     config["isDestinationRomaji"] = true
@@ -101,9 +80,10 @@ private func splitIntoRomaji(
         _toRomaji(input, options: config, map: nil)
     }
     
-    return applyMapping(
+    let mapping = applyMapping(
         katakanaToHiragana(input, toRomaji: wrappedToRomaji, config: config),
         map: map,
         optimize: !(options["IMEMode"] as? Bool ?? false)
     ) as! [(Int, Int, String)]
+    return mapping
 }

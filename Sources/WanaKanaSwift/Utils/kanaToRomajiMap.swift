@@ -2,6 +2,7 @@ import Foundation
 
 // MARK: - Constants
 
+private let queue = DispatchQueue(label: "com.wanakana.kanaToRomajiMap")
 nonisolated(unsafe) var kanaToHepburnMap: [String: Any]? = nil
 
 // prettier-ignore
@@ -102,8 +103,10 @@ func getKanaToRomajiTree(romanization: String) -> [String: Any] {
 // MARK: - Private Functions
 
 private func getKanaToHepburnTree() -> [String: Any] {
-    if kanaToHepburnMap == nil {
-        kanaToHepburnMap = createKanaToHepburnMap()
+    queue.sync {
+        if kanaToHepburnMap == nil {
+            kanaToHepburnMap = createKanaToHepburnMap()
+        }
     }
     return kanaToHepburnMap ?? [:]
 }
