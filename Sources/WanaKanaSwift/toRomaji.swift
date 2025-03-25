@@ -47,8 +47,8 @@ func _toRomaji(
     map: [String: Any]? = nil
 ) -> String {
     let config = mergeWithDefaultOptions(options)
-    
     var romajiMap: [String: Any]?
+
     romajiMap = map
     if romajiMap == nil {
         romajiMap = createKanaToRomajiMap(
