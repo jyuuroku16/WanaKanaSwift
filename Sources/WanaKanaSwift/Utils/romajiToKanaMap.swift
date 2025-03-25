@@ -162,7 +162,7 @@ func createRomajiToKanaMap() -> [String: Any] {
 
     // c is equivalent to k, but not for chi, cha, etc.
     if let kTree = kanaTree["k"] as? [String: Any] {
-        kanaTree["c"] = kTree.deepCopy()
+        kanaTree["c"] = kTree
     }
 
     // Handle aliases
@@ -232,23 +232,6 @@ func createRomajiToKanaMap() -> [String: Any] {
     }
 
     return kanaTree
-}
-
-// Helper extension for deep copying dictionaries
-extension Dictionary {
-    func deepCopy() -> [Key: Value] {
-        var copy: [Key: Value] = [:]
-        for (key, value) in self {
-            if let value = value as? NSCopying {
-                copy[key] = value.copy() as? Value
-            } else if let value = value as? [String: Any] {
-                copy[key] = value.deepCopy() as? Value
-            } else {
-                copy[key] = value
-            }
-        }
-        return copy
-    }
 }
 
 private let queue = DispatchQueue(label: "com.wanakana.romajiToKanaMap")
