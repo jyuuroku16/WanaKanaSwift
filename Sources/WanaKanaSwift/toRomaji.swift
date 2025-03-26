@@ -56,7 +56,6 @@ func _toRomaji(
             customRomajiMapping: config["customRomajiMapping"]
         )
     }
-    print(romajiMap)
     
     return splitIntoRomaji(input, options: config, map: romajiMap ?? [:])
         .map { (start, end, romaji) in

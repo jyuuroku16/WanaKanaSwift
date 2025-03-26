@@ -74,9 +74,8 @@ func _toKana(
         )
     }
     
-    let res = splitIntoConvertedKana(input, options: config, map: kanaMap)
+    return splitIntoConvertedKana(input, options: config, map: kanaMap)
         .map { (start, end, kana) in
-            print("start:\(start), end:\(end), kana:\(kana)")
             if kana == nil {
                 // Haven't converted the end of the string, since we are in IME mode
                 let startIndex = input.index(input.startIndex, offsetBy: start)
@@ -93,7 +92,6 @@ func _toKana(
             : hiraganaToKatakana(kana!)
         }
         .joined()
-    return res
 }
 
 /**

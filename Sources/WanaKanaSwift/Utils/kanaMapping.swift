@@ -123,7 +123,7 @@ func getSubTreeOf(_ tree: [String: Any], _ string: String) -> [String: Any] {
             currentTree = subtree
         }
     }
-    print(currentTree)
+
     return currentTree
 }
 
