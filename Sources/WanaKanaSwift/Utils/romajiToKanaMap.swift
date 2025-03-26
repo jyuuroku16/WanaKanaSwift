@@ -242,8 +242,8 @@ func getRomajiToKanaTree() -> [String: Any] {
         if romajiToKanaMap == nil {
             romajiToKanaMap = createRomajiToKanaMap()
         }
+        return romajiToKanaMap!
     }
-    return romajiToKanaMap!
 }
 
 nonisolated(unsafe) let USE_OBSOLETE_KANA_MAP = createCustomMapping([

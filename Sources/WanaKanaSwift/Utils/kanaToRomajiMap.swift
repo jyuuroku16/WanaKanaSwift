@@ -107,8 +107,8 @@ private func getKanaToHepburnTree() -> [String: Any] {
         if kanaToHepburnMap == nil {
             kanaToHepburnMap = createKanaToHepburnMap()
         }
+        return kanaToHepburnMap ?? [:]
     }
-    return kanaToHepburnMap ?? [:]
 }
 
 private func createKanaToHepburnMap() -> [String: Any] {
