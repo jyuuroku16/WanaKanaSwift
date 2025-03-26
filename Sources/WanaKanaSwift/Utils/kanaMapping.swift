@@ -10,7 +10,7 @@ import Foundation
  */
 func applyMapping(_ string: String, map mapping: [String: Any], optimize convertEnding: Bool) -> [(Int, Int, String?)] {
     let root = mapping
-
+    
     func nextSubtree(_ tree: [String: Any], nextChar: String) -> [String: Any]? {
         guard let subtree = tree[nextChar] as? [String: Any] else { return nil }
         return subtree
@@ -123,22 +123,35 @@ func getSubTreeOf(_ tree: [String: Any], _ string: String) -> [String: Any] {
  * - Returns: Function that merges custom mapping with default mapping
  */
 public func createCustomMapping(_ customMap: [String: String] = [:]) -> ([String: Any]) -> [String: Any] {
-    let customTree: [String: Any] = [:]
+    var customTree: [String: Any] = [:]
     
     for (roma, kana) in customMap {
-        var subTree = customTree
+        var currentDict = customTree
+        var path: [(dict: [String: Any], key: String)] = []
         
         for char in roma {
             let charString = String(char)
-            if subTree[charString] == nil {
-                subTree[charString] = [String: Any]()
+            if currentDict[charString] == nil {
+                currentDict[charString] = [String: Any]()
             }
-            if let nextTree = subTree[charString] as? [String: Any] {
-                subTree = nextTree
+            
+            path.append((dict: currentDict, key: charString))
+            if let nextDict = currentDict[charString] as? [String: Any] {
+                currentDict = nextDict
             }
         }
         
-        subTree[""] = kana
+        currentDict[""] = kana
+        
+        for (i, entry) in path.enumerated().reversed() {
+            var updatedDict = entry.dict
+            updatedDict[entry.key] = currentDict
+            currentDict = updatedDict
+            
+            if i == 0 {
+                customTree = currentDict
+            }
+        }
     }
     
     return { map in

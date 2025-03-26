@@ -9,7 +9,7 @@ import Foundation
  */
 func createKanaToRomajiMap(
     romanization: String,
-    customRomajiMapping: [String: String]? = nil
+    customRomajiMapping: Any? = nil
 ) -> [String: Any]? {
     // Create new mapping
     var map = getKanaToRomajiTree(romanization: romanization)
@@ -53,9 +53,10 @@ func _toRomaji(
     if romajiMap == nil {
         romajiMap = createKanaToRomajiMap(
             romanization: config["romanization"] as? String ?? "",
-            customRomajiMapping: config["customRomajiMapping"] as? [String: String]
+            customRomajiMapping: config["customRomajiMapping"]
         )
     }
+    print(romajiMap)
     
     return splitIntoRomaji(input, options: config, map: romajiMap ?? [:])
         .map { (start, end, romaji) in

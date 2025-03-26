@@ -4,15 +4,9 @@ import Testing
 @Suite("CustomMappingTests")
 final class CustomMappingTests {
     @Test("safe defaults") func safeDefaults() async throws {
-        #expect(throws: (any Error).self) {
-          try createCustomMapping()
-        }
-        #expect(throws: (any Error).self) {
-          try createCustomMapping([:])
-        }
-        #expect(throws: (any Error).self) {
-          try mergeCustomMapping([:], nil)
-        }
+        _ = createCustomMapping()
+        _ = createCustomMapping([:])
+        _ = mergeCustomMapping([:], nil)
     }
 
     @Test("applies customKanaMapping") func customKanaMapping() async throws {
