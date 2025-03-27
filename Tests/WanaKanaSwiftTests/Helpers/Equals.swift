@@ -11,6 +11,22 @@ func areDictionariesEqual(_ dict1: [String: Any], _ dict2: [String: Any]) -> Boo
     }
 }
 
+func areTupleArraysEqual(_ array1: [(Int, Int, String?)], _ array2: [(Int, Int, String)]) -> Bool {
+    guard array1.count == array2.count else { return false }
+    
+    for (tuple1, tuple2) in zip(array1, array2) {
+        guard tuple1.0 == tuple2.0 else { return false }
+        
+        guard tuple1.1 == tuple2.1 else { return false }
+        
+        guard let string1 = tuple1.2 else { return false }
+        
+        guard string1 == tuple2.2 else { return false }
+    }
+    
+    return true
+}
+
 func areArraysEqual(_ array1: [Any], _ array2: [Any]) -> Bool {
     do {
         let data1 = try JSONSerialization.data(withJSONObject: array1, options: .sortedKeys)
