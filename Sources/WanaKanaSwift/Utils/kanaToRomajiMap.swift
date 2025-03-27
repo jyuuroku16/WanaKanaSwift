@@ -193,7 +193,7 @@ private func resolveTsu(_ tree: [String: Any]) -> [String: Any] {
     return tsuTree
 }
 
-func setSubTreeValue(_ tree: [String: Any], _ path: String, _ value: String) -> [String: Any] {
+func setSubTreeValue(_ tree: [String: Any], _ path: String, _ value: Any) -> [String: Any] {
     var newTree = tree
     
     if path.isEmpty {

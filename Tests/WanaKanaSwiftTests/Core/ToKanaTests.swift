@@ -37,7 +37,7 @@ final class ToKanaTests {
     }
 
     @Test("It handles mixed syllabaries") func mixedSyllabaries() async throws {
-        #expect(WanaKana.toKana("座禅'zazen'スタイル") == "座禅「ざぜん」スタイル")
+        #expect(WanaKana.toKana("座禅‘zazen’スタイル") == "座禅「ざぜん」スタイル")
     }
 
     @Test("Will convert short to long dashes") func shortToLongDashes() async throws {
@@ -87,6 +87,7 @@ final class ToKanaTests {
     }
 }
 
+@Suite("SplitIntoConvertedKanaTests")
 final class SplitIntoConvertedKanaTests {
     @Test("sane defaults") func saneDefaults() async throws {
         #expect(areTupleArraysEqual(splitIntoConvertedKana(), []));
@@ -125,7 +126,7 @@ final class SplitIntoConvertedKanaTests {
     }
 
     @Test("It handles mixed syllabaries") func mixedSyllabaries() async throws {
-        #expect(areTupleArraysEqual(splitIntoConvertedKana("座禅'zazen'スタイル"), [
+        #expect(areTupleArraysEqual(splitIntoConvertedKana("座禅‘zazen’スタイル"), [
             (0, 1, "座"), (1, 2, "禅"),
             (2, 3, "「"),
             (3, 5, "ざ"), (5, 7, "ぜ"), (7, 8, "ん"),

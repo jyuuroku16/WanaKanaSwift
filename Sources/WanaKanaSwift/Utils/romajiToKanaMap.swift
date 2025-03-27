@@ -129,108 +129,112 @@ let AIUEO_CONSTRUCTIONS: [String: String] = [
 ]
 
 func createRomajiToKanaMap() -> [String: Any] {
+    // 1. Create basic tree
     var kanaTree = transform(BASIC_KUNREI)
-
-    let setTrans = { (string: String, transliteration: String) in
-        kanaTree = setSubTreeValue(kanaTree, string, transliteration)
-    }
-
-    // add tya, sya, etc.
+    
+    // 2. Add combinations like tya, sya etc.
     for (consonant, yKana) in CONSONANTS {
         for (roma, kana) in SMALL_Y {
             // for example kyo -> き + ょ
-            setTrans(consonant + roma, yKana + kana)
+            kanaTree = setSubTreeValue(kanaTree, consonant + roma, yKana + kana)
         }
     }
-
-    // add special symbols
+    
+    // 3. Add special symbols
     for (symbol, jSymbol) in SPECIAL_SYMBOLS {
-        setTrans(symbol, jSymbol)
+        kanaTree = setSubTreeValue(kanaTree, symbol, jSymbol)
     }
-
-    // things like うぃ, くぃ, etc.
+    
+    // 4. Add combinations like うぃ, くぃ etc.
     for (consonant, aiueoKana) in AIUEO_CONSTRUCTIONS {
         for (vowel, kana) in SMALL_VOWELS {
-            setTrans(consonant + vowel, aiueoKana + kana)
+            kanaTree = setSubTreeValue(kanaTree, consonant + vowel, aiueoKana + kana)
         }
     }
-
-    // different ways to write ん
+    
+    // 5. Handle different ways to write ん
     for nChar in ["n", "n'", "xn"] {
-        setTrans(nChar, "ん")
+        kanaTree = setSubTreeValue(kanaTree, nChar, "ん")
     }
-
-    // c is equivalent to k, but not for chi, cha, etc.
+    
+    // 6. Copy k to c (needs deep copy)
     if let kTree = kanaTree["k"] as? [String: Any] {
-        kanaTree["c"] = kTree
+        // Create deep copy
+        let kTreeData = try? JSONSerialization.data(withJSONObject: kTree)
+        if let kTreeData = kTreeData,
+           let cTree = try? JSONSerialization.jsonObject(with: kTreeData) as? [String: Any] {
+            kanaTree["c"] = cTree
+        }
     }
-
-    // Handle aliases
+    
+    // 7. Handle alias mappings
     for (string, alternative) in ALIASES {
         let allExceptLast = String(string.dropLast())
         let last = String(string.last!)
         
+        // Get alternative tree
         let altTree = getSubTreeOf(kanaTree, alternative)
+        
+        // Set mapping directly without additional processing
         if let value = altTree[""] as? String {
-            setTrans(string, value)
-        } else {
-            for (key, subValue) in altTree {
-                if let strValue = (subValue as? [String: Any])?[""] as? String {
-                    setTrans(string + key, strValue)
+            kanaTree = setSubTreeValue(kanaTree, string, value)
+        }
+    }
+    
+    // 8. Handle small letters
+    for (kunreiRoma, kana) in SMALL_LETTERS {
+        // Add x prefix version
+        let xRoma = "x" + kunreiRoma
+        kanaTree = setSubTreeValue(kanaTree, xRoma, kana)
+        
+        // Add l prefix version
+        let lRoma = "l" + kunreiRoma
+        kanaTree = setSubTreeValue(kanaTree, lRoma, kana)
+    }
+    
+    // 9. Handle special cases
+    for (string, kana) in SPECIAL_CASES {
+        kanaTree = setSubTreeValue(kanaTree, string, kana)
+    }
+    
+    // 10. Add sokuon (っ)
+    func addTsu(_ tree: [String: Any]) -> [String: Any] {
+        var tsuTree: [String: Any] = [:]
+        for (key, value) in tree {
+            if key.isEmpty {
+                if let strValue = value as? String {
+                    tsuTree[key] = "っ" + strValue
+                }
+            } else {
+                if let subTree = value as? [String: Any] {
+                    tsuTree[key] = addTsu(subTree)
                 }
             }
         }
+        return tsuTree
     }
-
-    // Helper function for getting alternatives
-    func getAlternatives(_ string: String) -> [String] {
-        var alternatives: [String] = []
-        let aliasesWithC = Array(ALIASES.map { ($0.key, $0.value) } + [("c", "k")])
-        for (alt, roma) in aliasesWithC where string.hasPrefix(roma) {
-            alternatives.append(string.replacingOccurrences(of: roma, with: alt))
-        }
-        return alternatives
-    }
-
-    // Handle small letters
-    for (kunreiRoma, kana) in SMALL_LETTERS {
-        // xtu -> っ
-        setTrans("x" + kunreiRoma, kana)
-        
-        // ltu -> っ
-        setTrans("l" + kunreiRoma, kana)
-
-        // ltsu -> ltu -> っ
-        for altRoma in getAlternatives(kunreiRoma) {
-            for prefix in ["l", "x"] {
-                setTrans(prefix + altRoma, kana)
-            }
-        }
-    }
-
-    // Handle special cases
-    for (string, kana) in SPECIAL_CASES {
-        setTrans(string, kana)
-    }
-
-    // add kka, tta, etc.
+    
     let consonantsToProcess = Array(CONSONANTS.keys) + ["c", "y", "w", "j"]
     for consonant in consonantsToProcess {
-        if let subtree = kanaTree[consonant] as? [String: Any] {
-            for (key, value) in subtree {
-                if let strValue = value as? String {
-                    setTrans(consonant + consonant + (key.isEmpty ? "" : key), "っ" + strValue)
-                }
-            }
+        if var subtree = kanaTree[consonant] as? [String: Any] {
+            subtree[consonant] = addTsu(subtree)
+            kanaTree[consonant] = subtree
         }
     }
-
-    // nn should not be っん
+    
+    // 11. Remove nn -> っん
     if var nTree = kanaTree["n"] as? [String: Any] {
         nTree["n"] = nil
         kanaTree["n"] = nTree
     }
-
+    
+    // 12. Create final immutable copy
+    let finalTreeData = try? JSONSerialization.data(withJSONObject: kanaTree)
+    if let finalTreeData = finalTreeData,
+       let finalTree = try? JSONSerialization.jsonObject(with: finalTreeData) as? [String: Any] {
+        return finalTree
+    }
+    
     return kanaTree
 }
 
