@@ -21,7 +21,7 @@ final class ToRomajiTests {
     }
 
     @Test("Will convert punctuation and full-width spaces") func punctuationAndSpaces() async throws {
-        #expect(WanaKana.toRomaji("！？。：・、〜ー「」『』［］（）｛｝") == "!?.:/,~-\"\"\"\"[](){}")
+        #expect(WanaKana.toRomaji(JA_PUNC.joined(separator: "")) == EN_PUNC.joined(separator: ""))
     }
 
     @Test("Use the upcaseKatakana flag to preserve casing for katakana") func upcaseKatakanaFlag() async throws {
