@@ -169,8 +169,8 @@ func createRomajiToKanaMap() -> [String: Any] {
     
     // 7. Handle alias mappings
     for (string, alternative) in ALIASES {
-        let allExceptLast = String(string.dropLast())
-        let last = String(string.last!)
+        _ = String(string.dropLast())
+        _ = String(string.last!)
         
         // Get alternative tree
         let altTree = getSubTreeOf(kanaTree, alternative)

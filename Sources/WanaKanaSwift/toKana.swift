@@ -11,7 +11,7 @@ import Foundation
 func createRomajiToKanaMap(
     IMEMode: Bool,
     useObsoleteKana: Bool,
-    customKanaMapping: [String: String]? = nil
+    customKanaMapping: Any? = nil
 ) -> [String: Any] {
     
     var map = getRomajiToKanaTree()
@@ -70,7 +70,7 @@ func _toKana(
         kanaMap = createRomajiToKanaMap(
             IMEMode: config["IMEMode"] as? Bool ?? false,
             useObsoleteKana: config["useObsoleteKana"] as? Bool ?? false,
-            customKanaMapping: config["customKanaMapping"] as? [String: String]
+            customKanaMapping: config["customKanaMapping"]
         )
     }
     
