@@ -14,6 +14,12 @@ func applyMapping(_ string: String, map mapping: [String: Any], optimize convert
     func nextSubtree(_ tree: [String: Any], nextChar: String) -> [String: Any]? {
         guard let subtree = tree[nextChar] as? [String: Any] else { return nil }
         
+        if let emptyValue = tree[""] as? String {
+            if emptyValue.isEmpty {
+                return subtree
+            }
+        }
+        
         var newSubtree: [String: Any] = [:]
         if let currentValue = tree[""] as? String {
             newSubtree[""] = currentValue + nextChar
@@ -123,7 +129,7 @@ func getSubTreeOf(_ tree: [String: Any], _ string: String) -> [String: Any] {
             currentTree = subtree
         }
     }
-
+    
     return currentTree
 }
 

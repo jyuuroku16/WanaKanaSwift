@@ -136,25 +136,25 @@ func createRomajiToKanaMap() -> [String: Any] {
     for (consonant, yKana) in CONSONANTS {
         for (roma, kana) in SMALL_Y {
             // for example kyo -> き + ょ
-            kanaTree = setSubTreeValue(kanaTree, consonant + roma, yKana + kana)
+            kanaTree = setSubTreeValue(kanaTree, consonant + roma, ["": yKana + kana])
         }
     }
     
     // 3. Add special symbols
     for (symbol, jSymbol) in SPECIAL_SYMBOLS {
-        kanaTree = setSubTreeValue(kanaTree, symbol, jSymbol)
+        kanaTree = setSubTreeValue(kanaTree, symbol, ["": jSymbol])
     }
     
     // 4. Add combinations like うぃ, くぃ etc.
     for (consonant, aiueoKana) in AIUEO_CONSTRUCTIONS {
         for (vowel, kana) in SMALL_VOWELS {
-            kanaTree = setSubTreeValue(kanaTree, consonant + vowel, aiueoKana + kana)
+            kanaTree = setSubTreeValue(kanaTree, consonant + vowel, ["": aiueoKana + kana])
         }
     }
     
     // 5. Handle different ways to write ん
     for nChar in ["n", "n'", "xn"] {
-        kanaTree = setSubTreeValue(kanaTree, nChar, "ん")
+        kanaTree = setSubTreeValue(kanaTree, nChar, ["": "ん"])
     }
     
     // 6. Copy k to c (needs deep copy)
@@ -167,34 +167,132 @@ func createRomajiToKanaMap() -> [String: Any] {
         }
     }
     
+    // Helper function to merge trees
+    func mergeTrees(_ target: inout [String: Any], _ source: [String: Any]) {
+        for (key, value) in source {
+            if var targetDict = target[key] as? [String: Any] {
+                if let sourceDict = value as? [String: Any] {
+                    // If source is empty dictionary but target has empty string key, keep target
+                    if sourceDict.isEmpty && targetDict[""] != nil {
+                        continue
+                    }
+                    // If target is empty dictionary and source has empty string key, use source
+                    if targetDict.isEmpty && sourceDict[""] != nil {
+                        target[key] = sourceDict
+                        continue
+                    }
+                    mergeTrees(&targetDict, sourceDict)
+                    target[key] = targetDict
+                }
+            } else {
+                // If we're setting a new dictionary and it's empty, make sure it has empty string key
+                if let sourceDict = value as? [String: Any], sourceDict.isEmpty {
+                    target[key] = ["": ""]
+                } else {
+                    target[key] = value
+                }
+            }
+        }
+    }
+    
     // 7. Handle alias mappings
-    for (string, alternative) in ALIASES {
-        _ = String(string.dropLast())
-        _ = String(string.last!)
+    let regularAliases = ALIASES.filter { !["shi", "chi", "tsu", "ji", "fu"].contains($0.key) }
+    for (string, alternative) in regularAliases {
+        let allExceptLast = String(string.dropLast())
+        let last = String(string.suffix(1))
         
-        // Get alternative tree
+        // Get the full alternative subtree
         let altTree = getSubTreeOf(kanaTree, alternative)
         
-        // Set mapping directly without additional processing
-        if let value = altTree[""] as? String {
-            kanaTree = setSubTreeValue(kanaTree, string, value)
+        // Create a deep copy of the alternative subtree
+        if let altTreeData = try? JSONSerialization.data(withJSONObject: altTree),
+           let altTreeCopy = try? JSONSerialization.jsonObject(with: altTreeData) as? [String: Any] {
+            
+            // Get parent tree
+            var parentTree = getSubTreeOf(kanaTree, allExceptLast)
+            
+            // If there's an existing subtree at the target location, merge them
+            if var existingSubtree = parentTree[last] as? [String: Any] {
+                mergeTrees(&existingSubtree, altTreeCopy)
+                parentTree[last] = existingSubtree
+            } else {
+                parentTree[last] = altTreeCopy
+            }
+            
+            // Update the main tree
+            kanaTree = setSubTreeValue(kanaTree, allExceptLast, parentTree)
         }
+    }
+    
+    // 7. Handle special alias mappings
+    let specialAliases = ALIASES.filter { ["shi", "chi", "tsu", "ji", "fu"].contains($0.key) }
+    for (string, alternative) in specialAliases {
+        let allExceptLast = String(string.dropLast())
+        let last = String(string.suffix(1))
+        
+        // Get the full alternative subtree
+        let altTree = getSubTreeOf(kanaTree, alternative)
+        
+        // Create a deep copy of the alternative subtree
+        if let altTreeData = try? JSONSerialization.data(withJSONObject: altTree),
+           let altTreeCopy = try? JSONSerialization.jsonObject(with: altTreeData) as? [String: Any] {
+            
+            // Get parent tree
+            var parentTree = getSubTreeOf(kanaTree, allExceptLast)
+            
+            parentTree[last] = altTreeCopy
+            
+            // Update the main tree
+            kanaTree = setSubTreeValue(kanaTree, allExceptLast, parentTree)
+        }
+    }
+    
+    // Helper function to get alternatives
+    func getAlternatives(_ string: String) -> [String] {
+        var alternatives: [String] = []
+        for (alt, roma) in ALIASES {
+            if string.starts(with: roma) {
+                alternatives.append(string.replacingOccurrences(of: roma, with: alt))
+            }
+        }
+        if string.starts(with: "k") {
+            alternatives.append(string.replacingOccurrences(of: "k", with: "c"))
+        }
+        return alternatives
     }
     
     // 8. Handle small letters
     for (kunreiRoma, kana) in SMALL_LETTERS {
-        // Add x prefix version
-        let xRoma = "x" + kunreiRoma
-        kanaTree = setSubTreeValue(kanaTree, xRoma, kana)
+        let last = { (char: String) -> String in
+            return String(char.suffix(1))
+        }
+        let allExceptLast = { (chars: String) -> String in
+            return String(chars.dropLast())
+        }
         
-        // Add l prefix version
-        let lRoma = "l" + kunreiRoma
-        kanaTree = setSubTreeValue(kanaTree, lRoma, kana)
+        let xRoma = "x\(kunreiRoma)"
+        var xSubtree = getSubTreeOf(kanaTree, xRoma)
+        xSubtree[""] = kana
+        kanaTree = setSubTreeValue(kanaTree, xRoma, xSubtree)
+        
+        // ltu -> xtu -> っ
+        var parentTree = getSubTreeOf(kanaTree, "l\(allExceptLast(kunreiRoma))")
+        parentTree[last(kunreiRoma)] = xSubtree
+        kanaTree = setSubTreeValue(kanaTree, "l\(allExceptLast(kunreiRoma))", parentTree)
+        
+        // ltsu -> ltu -> っ
+        for altRoma in getAlternatives(kunreiRoma) {
+            for prefix in ["l", "x"] {
+                var altParentTree = getSubTreeOf(kanaTree, prefix + allExceptLast(altRoma))
+                altParentTree[last(altRoma)] = getSubTreeOf(kanaTree, prefix + kunreiRoma)
+                kanaTree = setSubTreeValue(kanaTree, prefix + allExceptLast(altRoma), altParentTree)
+            }
+        }
     }
     
     // 9. Handle special cases
     for (string, kana) in SPECIAL_CASES {
-        kanaTree = setSubTreeValue(kanaTree, string, kana)
+        kanaTree = setSubTreeValue(kanaTree, string, ["": kana])
     }
     
     // 10. Add sokuon (っ)
@@ -236,6 +334,33 @@ func createRomajiToKanaMap() -> [String: Any] {
     }
     
     return kanaTree
+}
+
+fileprivate func setSubTreeValue(_ tree: [String: Any], _ path: String, _ value: Any) -> [String: Any] {
+    var newTree = tree
+    
+    if path.isEmpty {
+        if let dictValue = value as? [String: Any] {
+            for (key, val) in dictValue {
+                newTree[key] = val
+            }
+        }
+        return newTree
+    }
+    
+    let firstChar = String(path.first!)
+    let restPath = String(path.dropFirst())
+    
+    if newTree[firstChar] == nil {
+        newTree[firstChar] = [String: Any]()
+    }
+    
+    if var subTree = newTree[firstChar] as? [String: Any] {
+        subTree = setSubTreeValue(subTree, restPath, value)
+        newTree[firstChar] = subTree
+    }
+    
+    return newTree
 }
 
 private let queue = DispatchQueue(label: "com.wanakana.romajiToKanaMap")

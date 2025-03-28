@@ -113,39 +113,39 @@ private func getKanaToHepburnTree() -> [String: Any] {
 
 private func createKanaToHepburnMap() -> [String: Any] {
     var romajiTree = transform(BASIC_ROMAJI)
-
+    
     func subtreeOf(_ string: String) -> [String: Any] {
         return getSubTreeOf(romajiTree, string)
     }
-
+    
     let setTrans = { (string: String, transliteration: String) in
         romajiTree = setSubTreeValue(romajiTree, string, transliteration)
     }
-
+    
     // Add special symbols
     for (jsymbol, symbol) in SPECIAL_SYMBOLS {
         setTrans(jsymbol, symbol)
     }
-
+    
     // Add small y and aiueo
     for (roma, kana) in SMALL_Y.merging(SMALL_AIUEO, uniquingKeysWith: { key, _ in key }) {
         setTrans(roma, kana)
     }
-
+    
     // きゃ -> kya
     for kana in YOON_KANA {
         let firstRomajiChar = (subtreeOf(kana)[""] as? String)?.first?.description ?? ""
-
+        
         for (yKana, yRoma) in SMALL_Y {
             setTrans(kana + yKana, firstRomajiChar + yRoma)
         }
-
+        
         // きぃ -> kyi
         for (yKana, yRoma) in SMALL_Y_EXTRA {
             setTrans(kana + yKana, firstRomajiChar + yRoma)
         }
     }
-
+    
     // Handle exceptions
     for (kana, roma) in YOON_EXCEPTIONS {
         // じゃ -> ja
@@ -156,32 +156,32 @@ private func createKanaToHepburnMap() -> [String: Any] {
         setTrans("\(kana)ぃ", "\(roma)yi")
         setTrans("\(kana)ぇ", "\(roma)e")
     }
-
+    
     romajiTree["っ"] = resolveTsu(romajiTree)
-
+    
     // Add small kana
     for (kana, roma) in SMALL_KANA {
         setTrans(kana, roma)
     }
-
+    
     // Handle ambiguous vowels
     for kana in AMBIGUOUS_VOWELS {
         setTrans("ん\(kana)", "n'\(subtreeOf(kana)[""] ?? "")")
     }
-
+    
     return romajiTree
 }
 
 private func resolveTsu(_ tree: [String: Any]) -> [String: Any] {
     var tsuTree: [String: Any] = [:]
-
+    
     for (key, value) in tree {
         if key.isEmpty {
             if let valueStr = value as? String {
                 let consonant = String(valueStr.prefix(1))
                 tsuTree[key] = SOKUON_WHITELIST.keys.contains(consonant) ?
-                    SOKUON_WHITELIST[consonant]! + valueStr :
-                    valueStr
+                SOKUON_WHITELIST[consonant]! + valueStr :
+                valueStr
             }
         } else {
             if let subTree = value as? [String: Any] {
@@ -189,11 +189,11 @@ private func resolveTsu(_ tree: [String: Any]) -> [String: Any] {
             }
         }
     }
-
+    
     return tsuTree
 }
 
-func setSubTreeValue(_ tree: [String: Any], _ path: String, _ value: Any) -> [String: Any] {
+fileprivate func setSubTreeValue(_ tree: [String: Any], _ path: String, _ value: Any) -> [String: Any] {
     var newTree = tree
     
     if path.isEmpty {
