@@ -105,16 +105,16 @@ final class ConversionsTests {
 
     @Test("Converting kana to kana - Mixed syllabaries") func testKanaToKanaMixedSyllabaries() async throws {
         // It passes non-katakana through when passRomaji is true k -> h
-        #expect(WanaKana.toHiragana("座禅'zazen'スタイル", options: ["passRomaji": true]) == "座禅'zazen'すたいる")
+        #expect(WanaKana.toHiragana("座禅‘zazen’スタイル", options: ["passRomaji": true]) == "座禅‘zazen’すたいる")
 
         // It passes non-hiragana through when passRomaji is true h -> k
-        #expect(WanaKana.toKatakana("座禅'zazen'すたいる", options: ["passRomaji": true]) == "座禅'zazen'スタイル")
+        #expect(WanaKana.toKatakana("座禅‘zazen’すたいる", options: ["passRomaji": true]) == "座禅‘zazen’スタイル")
 
         // It converts non-katakana when passRomaji is false k -> h
-        #expect(WanaKana.toHiragana("座禅'zazen'スタイル") == "座禅「ざぜん」すたいる")
+        #expect(WanaKana.toHiragana("座禅‘zazen’スタイル") == "座禅「ざぜん」すたいる")
 
         // It converts non-hiragana when passRomaji is false h -> k
-        #expect(WanaKana.toKatakana("座禅'zazen'すたいる") == "座禅「ザゼン」スタイル")
+        #expect(WanaKana.toKatakana("座禅‘zazen’すたいる") == "座禅「ザゼン」スタイル")
     }
 
     @Test("Case sensitivity") func testCaseSensitivity() async throws {
