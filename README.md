@@ -88,6 +88,6 @@ WanaKanaSwift.tokenize("ふふフフ")
 // => ["ふふ", "フフ"]
 WanaKanaSwift.tokenize("hello 田中さん")
 // => ["hello", " ", "田中", "さん"]
-WanaKanaSwift.tokenize("I said 私はすごく悲しい", options: [compact: true])
+WanaKanaSwift.tokenize("I said 私はすごく悲しい", options: ["compact": true])
 // => [ "I said ", "私はすごく悲しい"]
 ```
