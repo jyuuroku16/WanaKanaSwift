@@ -9,8 +9,8 @@ final class ConversionsTests {
             let hiragana = item[1]
             let katakana = item[2]
 
-            let lower = WanaKana.toKana(romaji)
-            let upper = WanaKana.toKana(romaji.uppercased())
+            let lower = WanaKanaSwift.toKana(romaji)
+            let upper = WanaKanaSwift.toKana(romaji.uppercased())
 
             #expect(lower == hiragana)
             #expect(upper == katakana)
@@ -22,8 +22,8 @@ final class ConversionsTests {
             let romaji = item[0]
             let hiragana = item[1]
 
-            let lower = WanaKana.toHiragana(romaji)
-            let upper = WanaKana.toHiragana(romaji.uppercased())
+            let lower = WanaKanaSwift.toHiragana(romaji)
+            let upper = WanaKanaSwift.toHiragana(romaji.uppercased())
 
             #expect(lower == hiragana)
             #expect(upper == hiragana)
@@ -35,8 +35,8 @@ final class ConversionsTests {
             let romaji = item[0]
             let katakana = item[2]
 
-            let lower = WanaKana.toKatakana(romaji)
-            let upper = WanaKana.toKatakana(romaji.uppercased())
+            let lower = WanaKanaSwift.toKatakana(romaji)
+            let upper = WanaKanaSwift.toKatakana(romaji.uppercased())
 
             #expect(lower == katakana)
             #expect(upper == katakana)
@@ -49,7 +49,7 @@ final class ConversionsTests {
             let romaji = item[2]
 
             if !hiragana.isEmpty {
-                let result = WanaKana.toRomaji(hiragana)
+                let result = WanaKanaSwift.toRomaji(hiragana)
                 #expect(result == romaji)
             }
         }
@@ -61,7 +61,7 @@ final class ConversionsTests {
             let romaji = item[2]
 
             if !katakana.isEmpty {
-                let result = WanaKana.toRomaji(katakana)
+                let result = WanaKanaSwift.toRomaji(katakana)
                 #expect(result == romaji)
             }
         }
@@ -69,104 +69,104 @@ final class ConversionsTests {
 
     @Test("Converting kana to kana") func testKanaToKanaConversions() async throws {
         // k -> h
-        #expect(WanaKana.toHiragana("バケル") == "ばける")
+        #expect(WanaKanaSwift.toHiragana("バケル") == "ばける")
         // h -> k
-        #expect(WanaKana.toKatakana("ばける") == "バケル")
+        #expect(WanaKanaSwift.toKatakana("ばける") == "バケル")
 
         // It survives only katakana toKatakana
-        #expect(WanaKana.toKatakana("スタイル") == "スタイル")
+        #expect(WanaKanaSwift.toKatakana("スタイル") == "スタイル")
         // It survives only hiragana toHiragana
-        #expect(WanaKana.toHiragana("すたーいる") == "すたーいる")
+        #expect(WanaKanaSwift.toHiragana("すたーいる") == "すたーいる")
         // Mixed kana converts every char k -> h
-        #expect(WanaKana.toKatakana("アメリカじん") == "アメリカジン")
+        #expect(WanaKanaSwift.toKatakana("アメリカじん") == "アメリカジン")
         // Mixed kana converts every char h -> k
-        #expect(WanaKana.toHiragana("アメリカじん") == "あめりかじん")
+        #expect(WanaKanaSwift.toHiragana("アメリカじん") == "あめりかじん")
     }
 
     @Test("Converting kana to kana - long vowels") func testKanaToKanaLongVowels() async throws {
         // Converts long vowels correctly from k -> h
-        #expect(WanaKana.toHiragana("バツゴー") == "ばつごう")
+        #expect(WanaKanaSwift.toHiragana("バツゴー") == "ばつごう")
         // Preserves long dash from h -> k
-        #expect(WanaKana.toKatakana("ばつゲーム") == "バツゲーム")
+        #expect(WanaKanaSwift.toKatakana("ばつゲーム") == "バツゲーム")
         // Preserves long dash from h -> h
-        #expect(WanaKana.toHiragana("ばつげーむ") == "ばつげーむ")
+        #expect(WanaKanaSwift.toHiragana("ばつげーむ") == "ばつげーむ")
         // Preserves long dash from k -> k
-        #expect(WanaKana.toKatakana("バツゲーム") == "バツゲーム")
+        #expect(WanaKanaSwift.toKatakana("バツゲーム") == "バツゲーム")
         // Preserves long dash from mixed -> k
-        #expect(WanaKana.toKatakana("バツゲーム") == "バツゲーム")
-        #expect(WanaKana.toKatakana("テスーと") == "テスート")
+        #expect(WanaKanaSwift.toKatakana("バツゲーム") == "バツゲーム")
+        #expect(WanaKanaSwift.toKatakana("テスーと") == "テスート")
         // Preserves long dash from mixed -> h
-        #expect(WanaKana.toHiragana("てすート") == "てすーと")
-        #expect(WanaKana.toHiragana("てすー戸") == "てすー戸")
-        #expect(WanaKana.toHiragana("手巣ート") == "手巣ーと")
-        #expect(WanaKana.toHiragana("tesート") == "てsーと")
-        #expect(WanaKana.toHiragana("ートtesu") == "ーとてす")
+        #expect(WanaKanaSwift.toHiragana("てすート") == "てすーと")
+        #expect(WanaKanaSwift.toHiragana("てすー戸") == "てすー戸")
+        #expect(WanaKanaSwift.toHiragana("手巣ート") == "手巣ーと")
+        #expect(WanaKanaSwift.toHiragana("tesート") == "てsーと")
+        #expect(WanaKanaSwift.toHiragana("ートtesu") == "ーとてす")
     }
 
     @Test("Converting kana to kana - Mixed syllabaries") func testKanaToKanaMixedSyllabaries() async throws {
         // It passes non-katakana through when passRomaji is true k -> h
-        #expect(WanaKana.toHiragana("座禅‘zazen’スタイル", options: ["passRomaji": true]) == "座禅‘zazen’すたいる")
+        #expect(WanaKanaSwift.toHiragana("座禅‘zazen’スタイル", options: ["passRomaji": true]) == "座禅‘zazen’すたいる")
 
         // It passes non-hiragana through when passRomaji is true h -> k
-        #expect(WanaKana.toKatakana("座禅‘zazen’すたいる", options: ["passRomaji": true]) == "座禅‘zazen’スタイル")
+        #expect(WanaKanaSwift.toKatakana("座禅‘zazen’すたいる", options: ["passRomaji": true]) == "座禅‘zazen’スタイル")
 
         // It converts non-katakana when passRomaji is false k -> h
-        #expect(WanaKana.toHiragana("座禅‘zazen’スタイル") == "座禅「ざぜん」すたいる")
+        #expect(WanaKanaSwift.toHiragana("座禅‘zazen’スタイル") == "座禅「ざぜん」すたいる")
 
         // It converts non-hiragana when passRomaji is false h -> k
-        #expect(WanaKana.toKatakana("座禅‘zazen’すたいる") == "座禅「ザゼン」スタイル")
+        #expect(WanaKanaSwift.toKatakana("座禅‘zazen’すたいる") == "座禅「ザゼン」スタイル")
     }
 
     @Test("Case sensitivity") func testCaseSensitivity() async throws {
         // Case doesn't matter for toHiragana()
-        #expect(WanaKana.toHiragana("aiueo") == WanaKana.toHiragana("AIUEO"))
+        #expect(WanaKanaSwift.toHiragana("aiueo") == WanaKanaSwift.toHiragana("AIUEO"))
         // Case doesn't matter for toKatakana()
-        #expect(WanaKana.toKatakana("aiueo") == WanaKana.toKatakana("AIUEO"))
+        #expect(WanaKanaSwift.toKatakana("aiueo") == WanaKanaSwift.toKatakana("AIUEO"))
         // Case DOES matter for toKana()
-        #expect(WanaKana.toKana("aiueo") != WanaKana.toKana("AIUEO"))
+        #expect(WanaKanaSwift.toKana("aiueo") != WanaKanaSwift.toKana("AIUEO"))
     }
 
     @Test("N edge cases") func testNEdgeCases() async throws {
         // Solo N
-        #expect(WanaKana.toKana("n") == "ん")
+        #expect(WanaKanaSwift.toKana("n") == "ん")
         // double N
-        #expect(WanaKana.toKana("onn") == "おんん")
+        #expect(WanaKanaSwift.toKana("onn") == "おんん")
         // N followed by N* syllable
-        #expect(WanaKana.toKana("onna") == "おんな")
+        #expect(WanaKanaSwift.toKana("onna") == "おんな")
         // Triple N
-        #expect(WanaKana.toKana("nnn") == "んんん")
+        #expect(WanaKanaSwift.toKana("nnn") == "んんん")
         // Triple N followed by N* syllable
-        #expect(WanaKana.toKana("onnna") == "おんんな")
+        #expect(WanaKanaSwift.toKana("onnna") == "おんんな")
         // Quadruple N
-        #expect(WanaKana.toKana("nnnn") == "んんんん")
+        #expect(WanaKanaSwift.toKana("nnnn") == "んんんん")
         // nya -> にゃ
-        #expect(WanaKana.toKana("nyan") == "にゃん")
+        #expect(WanaKanaSwift.toKana("nyan") == "にゃん")
         // nnya -> んにゃ
-        #expect(WanaKana.toKana("nnyann") == "んにゃんん")
+        #expect(WanaKanaSwift.toKana("nnyann") == "んにゃんん")
         // nnnya -> んにゃ
-        #expect(WanaKana.toKana("nnnyannn") == "んんにゃんんん")
+        #expect(WanaKanaSwift.toKana("nnnyannn") == "んんにゃんんん")
         // n'ya -> んや
-        #expect(WanaKana.toKana("n'ya") == "んや")
+        #expect(WanaKanaSwift.toKana("n'ya") == "んや")
         // kin'ya -> きんや
-        #expect(WanaKana.toKana("kin'ya") == "きんや")
+        #expect(WanaKanaSwift.toKana("kin'ya") == "きんや")
         // shin'ya -> しんや
-        #expect(WanaKana.toKana("shin'ya") == "しんや")
+        #expect(WanaKanaSwift.toKana("shin'ya") == "しんや")
         // kinyou -> きにょう
-        #expect(WanaKana.toKana("kinyou") == "きにょう")
+        #expect(WanaKanaSwift.toKana("kinyou") == "きにょう")
         // kin'you -> きんよう
-        #expect(WanaKana.toKana("kin'you") == "きんよう")
+        #expect(WanaKanaSwift.toKana("kin'you") == "きんよう")
         // kin'yu -> きんゆ
-        #expect(WanaKana.toKana("kin'yu") == "きんゆ")
+        #expect(WanaKanaSwift.toKana("kin'yu") == "きんゆ")
         // Properly add space after "n[space]"
-        #expect(WanaKana.toKana("ichiban warui") == "いちばん わるい")
+        #expect(WanaKanaSwift.toKana("ichiban warui") == "いちばん わるい")
     }
 
     @Test("Bogus 4 character sequences") func testBogusSequences() async throws {
         // Non bogus sequences work
-        #expect(WanaKana.toKana("chya") == "ちゃ")
+        #expect(WanaKanaSwift.toKana("chya") == "ちゃ")
         // Bogus sequences do not work
-        #expect(WanaKana.toKana("chyx") == "chyx")
-        #expect(WanaKana.toKana("shyp") == "shyp")
-        #expect(WanaKana.toKana("ltsb") == "ltsb")
+        #expect(WanaKanaSwift.toKana("chyx") == "chyx")
+        #expect(WanaKanaSwift.toKana("shyp") == "shyp")
+        #expect(WanaKanaSwift.toKana("ltsb") == "ltsb")
     }
 }

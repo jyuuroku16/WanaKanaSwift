@@ -19,75 +19,75 @@ dependencies: [
 ## Quick Reference
 
 ```Swift
-import WanaKana
+import WanaKanaSwift
 
 /*** TEXT CHECKING UTILITIES ***/
-WanaKana.isJapanese("泣き虫。！〜２￥ｚｅｎｋａｋｕ")
+WanaKanaSwift.isJapanese("泣き虫。！〜２￥ｚｅｎｋａｋｕ")
 // => true
 
-WanaKana.isKana("あーア")
+WanaKanaSwift.isKana("あーア")
 // => true
 
-WanaKana.isHiragana("すげー")
+WanaKanaSwift.isHiragana("すげー")
 // => true
 
-WanaKana.isKatakana("ゲーム")
+WanaKanaSwift.isKatakana("ゲーム")
 // => true
 
-WanaKana.isKanji("切腹")
+WanaKanaSwift.isKanji("切腹")
 // => true
-WanaKana.isKanji("勢い")
+WanaKanaSwift.isKanji("勢い")
 // => false
 
-WanaKana.isRomaji("Tōkyō and Ōsaka")
+WanaKanaSwift.isRomaji("Tōkyō and Ōsaka")
 // => true
 
-WanaKana.toKana("ONAJI buttsuuji")
+WanaKanaSwift.toKana("ONAJI buttsuuji")
 // => "オナジ ぶっつうじ"
-WanaKana.toKana("座禅'zazen'スタイル")
+WanaKanaSwift.toKana("座禅'zazen'スタイル")
 // => "座禅「ざぜん」スタイル"
-WanaKana.toKana("batsuge-mu")
+WanaKanaSwift.toKana("batsuge-mu")
 // => "ばつげーむ"
-WanaKana.toKana("WanaKana", options: ["customKanaMapping": [ "na": "に", "ka": "bana" ]]);
+WanaKanaSwift.toKana("WanaKana", options: ["customKanaMapping": [ "na": "に", "ka": "bana" ]]);
 // => "わにbanaに"
 
-WanaKana.toHiragana("toukyou, オオサカ")
+WanaKanaSwift.toHiragana("toukyou, オオサカ")
 // => "とうきょう、 おおさか"
-WanaKana.toHiragana("only カナ", options: ["passRomaji": true])
+WanaKanaSwift.toHiragana("only カナ", options: ["passRomaji": true])
 // => "only かな"
-WanaKana.toHiragana("wi", options: ["useObsoleteKana": true])
+WanaKanaSwift.toHiragana("wi", options: ["useObsoleteKana": true])
 // => "ゐ"
 
-WanaKana.toKatakana("toukyou, おおさか")
+WanaKanaSwift.toKatakana("toukyou, おおさか")
 // => "トウキョウ、 オオサカ"
-WanaKana.toKatakana("only かな", options: ["passRomaji": true])
+WanaKanaSwift.toKatakana("only かな", options: ["passRomaji": true])
 // => "only カナ"
-WanaKana.toKatakana("wi", options: ["useObsoleteKana": true])
+WanaKanaSwift.toKatakana("wi", options: ["useObsoleteKana": true])
 // => "ヰ"
 
-WanaKana.toRomaji("ひらがな　カタカナ")
+WanaKanaSwift.toRomaji("ひらがな　カタカナ")
 // => "hiragana katakana"
-WanaKana.toRomaji("ひらがな　カタカナ", options: ["upcaseKatakana": true])
+WanaKanaSwift.toRomaji("ひらがな　カタカナ", options: ["upcaseKatakana": true])
 // => "hiragana KATAKANA"
-WanaKana.toRomaji("つじぎり", options: ["customRomajiMapping": ["じ": "zi", "つ": "tu", "り": "li" ]]);
+WanaKanaSwift.toRomaji("つじぎり", options: ["customRomajiMapping": ["じ": "zi", "つ": "tu", "り": "li" ]]);
 // => "tuzigili"
 
 /*** EXTRA UTILITIES ***/
-WanaKana.stripOkurigana("お祝い")
+WanaKanaSwift.stripOkurigana("お祝い")
 // => "お祝"
-WanaKana.stripOkurigana("踏み込む")
+WanaKanaSwift.stripOkurigana("踏み込む")
 // => "踏み込"
-WanaKana.stripOkurigana("お腹", options: ["leading": true]);
+WanaKanaSwift.stripOkurigana("お腹", options: ["leading": true]);
 // => "腹"
-WanaKana.stripOkurigana("ふみこむ", options: ["matchKanji": "踏み込む"]);
+WanaKanaSwift.stripOkurigana("ふみこむ", options: ["matchKanji": "踏み込む"]);
 // => "ふみこ"
-WanaKana.stripOkurigana("おみまい", options: ["matchKanji": "お祝い", "leading": true ]);
+WanaKanaSwift.stripOkurigana("おみまい", options: ["matchKanji": "お祝い", "leading": true ]);
 // => "みまい"
 
-WanaKana.tokenize("ふふフフ")
+WanaKanaSwift.tokenize("ふふフフ")
 // => ["ふふ", "フフ"]
-WanaKana.tokenize("hello 田中さん")
+WanaKanaSwift.tokenize("hello 田中さん")
 // => ["hello", " ", "田中", "さん"]
-WanaKana.tokenize("I said 私はすごく悲しい", options: [compact: true])
+WanaKanaSwift.tokenize("I said 私はすごく悲しい", options: [compact: true])
 // => [ "I said ", "私はすごく悲しい"]
 ```
