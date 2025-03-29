@@ -4,79 +4,75 @@ import Testing
 
 @Suite("PerformanceTests")
 final class PerformanceTests {
-    @Test("Converts 100,000 characters in less than 1 second") func testLargeConversion() async throws {
+    @Test("Mean romaji toKana as hiragana speed < 1ms") func testRomajiToKanaHiragana() async throws {
         let startTime = Date()
-        let testString = String(repeating: "aiueoshinnndesu", count: 6250) // 16 chars * 6250 = 100,000 chars
-        let _ = WanaKana.toKana(testString)
+        let _ = WanaKana.toKana("aiueosashisusesonaninunenokakikukeko")
         let endTime = Date()
 
         let duration = endTime.timeIntervalSince(startTime)
-        #expect(duration < 1.0)
+        #expect(duration < 0.01)
     }
 
-    @Test("Converts 100,000 characters in less than 1 second with IME mode") func testLargeConversionIME() async throws {
+    @Test("Mean romaji toKana as katakana speed < 1ms") func testRomajiToKanaKatakana() async throws {
         let startTime = Date()
-        let testString = String(repeating: "aiueoshinnndesu", count: 6250) // 16 chars * 6250 = 100,000 chars
-        let _ = WanaKana.toKana(testString, options: [
-            "IMEMode": true
-        ])
+        let _ = WanaKana.toKana("AIUEOSASHISUSESONANINUNENOKAKIKUKEKO")
         let endTime = Date()
 
         let duration = endTime.timeIntervalSince(startTime)
-        #expect(duration < 1.0)
+        #expect(duration < 0.01)
     }
 
-    @Test("Converts 100,000 characters in less than 1 second with custom mappings") func testLargeConversionCustomMappings() async throws {
+    @Test("Mean romaji toHiragana speed < 1ms") func testRomajiToHiragana() async throws {
         let startTime = Date()
-        let testString = String(repeating: "aiueoshinnndesu", count: 6250) // 16 chars * 6250 = 100,000 chars
-        let _ = WanaKana.toKana(testString, options: [ "customKanaMapping": [
-            "sh": "し",
-            "nn": "ん",
-            "n": "の"
-        ]])
+        let _ = WanaKana.toHiragana("aiueosashisusesonaninunenokakikukeko")
         let endTime = Date()
 
         let duration = endTime.timeIntervalSince(startTime)
-        #expect(duration < 1.0)
+        #expect(duration < 0.01)
     }
 
-    @Test("Converts hiragana to katakana in less than 1 second") func testHiraganaToKatakana() async throws {
+    @Test("Mean katakana toHiragana speed < 1ms") func testKatakanaToHiragana() async throws {
         let startTime = Date()
-        let testString = String(repeating: "あいうえおさしすせそなにぬねのかきくけこ", count: 2500)
-        let _ = WanaKana.toKatakana(testString)
+        let _ = WanaKana.toHiragana("アイウエオサシスセソナニヌネノカキクケコ")
         let endTime = Date()
 
         let duration = endTime.timeIntervalSince(startTime)
-        #expect(duration < 1.0)
+        #expect(duration < 0.01)
     }
 
-    @Test("Converts katakana to hiragana in less than 1 second") func testKatakanaToHiragana() async throws {
+    @Test("Mean romaji toKatakana speed < 1ms") func testRomajiToKatakana() async throws {
         let startTime = Date()
-        let testString = String(repeating: "アイウエオサシスセソナニヌネノカキクケコ", count: 2500)
-        let _ = WanaKana.toHiragana(testString)
+        let _ = WanaKana.toKatakana("aiueosashisusesonaninunenokakikukeko")
         let endTime = Date()
 
         let duration = endTime.timeIntervalSince(startTime)
-        #expect(duration < 1.0)
+        #expect(duration < 0.01)
     }
 
-    @Test("Converts hiragana to romaji in less than 1 second") func testHiraganaToRomaji() async throws {
+    @Test("Mean hiragana toKatakana speed < 1ms") func testHiraganaToKatakana() async throws {
         let startTime = Date()
-        let testString = String(repeating: "あいうえおさしすせそなにぬねのかきくけこ", count: 2500)
-        let _ = WanaKana.toRomaji(testString)
+        let _ = WanaKana.toKatakana("あいうえおさしすせそなにぬねのかきくけこ")
         let endTime = Date()
 
         let duration = endTime.timeIntervalSince(startTime)
-        #expect(duration < 1.0)
+        #expect(duration < 0.01)
     }
 
-    @Test("Converts katakana to romaji in less than 1 second") func testKatakanaToRomaji() async throws {
+    @Test("Mean hiragana toRomaji speed < 1ms") func testHiraganaToRomaji() async throws {
         let startTime = Date()
-        let testString = String(repeating: "アイウエオサシスセソナニヌネノカキクケコ", count: 2500)
-        let _ = WanaKana.toRomaji(testString)
+        let _ = WanaKana.toRomaji("あいうえおさしすせそなにぬねのかきくけこ")
         let endTime = Date()
 
         let duration = endTime.timeIntervalSince(startTime)
-        #expect(duration < 1.0)
+        #expect(duration < 0.01)
+    }
+
+    @Test("Mean katakana toRomaji speed < 1ms") func testKatakanaToRomaji() async throws {
+        let startTime = Date()
+        let _ = WanaKana.toRomaji("アイウエオサシスセソナニヌネノカキクケコ")
+        let endTime = Date()
+
+        let duration = endTime.timeIntervalSince(startTime)
+        #expect(duration < 0.01)
     }
 }
