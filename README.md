@@ -1,14 +1,16 @@
-## WanaKana Swift [WIP]
+## WanaKana Swift
 
 ### ワナカナ <--> WanaKana <--> わなかな
 
 Utility library for checking and converting between Japanese characters - Hiragana, Katakana - and Romaji (Ported from https://github.com/WaniKani/WanaKana V4.0.2)
 
-<!-- #### Install
+#### Swift Package Manager
 
-```shell
-
-``` -->
+```swift
+dependencies: [
+    .package(url: "https://github.com/wwzzyying/WanaKanaSwift", from: "1.0.0")
+]
+```
 
 ## Documentation
 
