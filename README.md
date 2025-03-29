@@ -8,7 +8,7 @@ Utility library for checking and converting between Japanese characters - Hiraga
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/wwzzyying/WanaKanaSwift", from: "1.0.0")
+    .package(url: "https://github.com/jyuuroku16/WanaKanaSwift", from: "1.0.0")
 ]
 ```
 
