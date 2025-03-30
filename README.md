@@ -12,6 +12,20 @@ dependencies: [
 ]
 ```
 
+#### CocoaPods
+
+Add the following to your Podfile:
+
+```ruby
+pod 'WanaKanaSwift'
+```
+
+Then run:
+
+```bash
+pod install
+```
+
 ## Documentation
 
 [Extended API reference](http://www.WanaKana.com/docs/global.html)
