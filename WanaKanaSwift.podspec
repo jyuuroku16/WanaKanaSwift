@@ -17,4 +17,5 @@ Pod::Spec.new do |spec|
   
   spec.swift_version = '6.0'
   spec.source_files = 'Sources/WanaKanaSwift/**/*'
+  spec.exclude_files = 'docs/**/*'
 end 

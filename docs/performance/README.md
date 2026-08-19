@@ -2,8 +2,6 @@
 
 This report is the release-ready record of the Swift-native rewrite versus `37cd80f` (`feat: support Cocoapods`).
 
-Use it as-is in GitHub Release notes, or copy the **Results** and **How to reproduce** sections.
-
 ## Summary
 
 The rewrite is faster on character classification, tokenization, and kana-to-kana conversion. Romaji conversion of long strings is unchanged, because that path is still dominated by the shared `[String: Any]` mapping tree.

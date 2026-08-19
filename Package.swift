@@ -18,10 +18,13 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "WanaKanaSwift"),
+            name: "WanaKanaSwift",
+            path: "Sources/WanaKanaSwift"
+        ),
         .testTarget(
             name: "WanaKanaSwiftTests",
-            dependencies: ["WanaKanaSwift"]
+            dependencies: ["WanaKanaSwift"],
+            path: "Tests/WanaKanaSwiftTests"
         ),
     ]
 )
