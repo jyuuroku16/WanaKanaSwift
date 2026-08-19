@@ -9,33 +9,30 @@ import Foundation
  * - Returns: Array of tuples containing start index, end index, and converted string
  */
 func applyMapping(_ string: String, map mapping: [String: Any], optimize convertEnding: Bool) -> [(Int, Int, String?)] {
+    let chars = Array(string)
     let root = mapping
-    
+
     func nextSubtree(_ tree: [String: Any], nextChar: String) -> [String: Any]? {
         guard let subtree = tree[nextChar] as? [String: Any] else { return nil }
-        
-        if let emptyValue = tree[""] as? String {
-            if emptyValue.isEmpty {
-                return subtree
-            }
+
+        if let emptyValue = tree[""] as? String, emptyValue.isEmpty {
+            return subtree
         }
-        
+
         var newSubtree: [String: Any] = [:]
         if let currentValue = tree[""] as? String {
             newSubtree[""] = currentValue + nextChar
         }
-        
         for (key, value) in subtree {
             newSubtree[key] = value
         }
-        
         return newSubtree
     }
-    
-    func newChunk(_ remaining: String, currentCursor: Int) -> [(Int, Int, String?)] {
-        guard let firstChar = remaining.first else { return [] }
-        let firstCharString = String(firstChar)
-        
+
+    func newChunk(from index: Int) -> [(Int, Int, String?)] {
+        guard index < chars.count else { return [] }
+        let firstCharString = String(chars[index])
+
         var initialTree: [String: Any] = [:]
         if let subtree = root[firstCharString] as? [String: Any] {
             initialTree = subtree
@@ -45,17 +42,12 @@ func applyMapping(_ string: String, map mapping: [String: Any], optimize convert
         } else {
             initialTree[""] = firstCharString
         }
-        
-        return parse(
-            initialTree,
-            remaining: String(remaining.dropFirst()),
-            lastCursor: currentCursor,
-            currentCursor: currentCursor + 1
-        )
+
+        return parse(initialTree, nextIndex: index + 1, lastCursor: index, currentCursor: index + 1)
     }
-    
-    func parse(_ tree: [String: Any], remaining: String, lastCursor: Int, currentCursor: Int) -> [(Int, Int, String?)] {
-        if remaining.isEmpty {
+
+    func parse(_ tree: [String: Any], nextIndex: Int, lastCursor: Int, currentCursor: Int) -> [(Int, Int, String?)] {
+        if nextIndex >= chars.count {
             if convertEnding || tree.count == 1 {
                 if let nodeValue = tree[""] as? String {
                     return [(lastCursor, currentCursor, nodeValue)]
@@ -64,38 +56,29 @@ func applyMapping(_ string: String, map mapping: [String: Any], optimize convert
             }
             return [(lastCursor, currentCursor, nil)]
         }
-        
+
         if tree.count == 1 {
             let nodeValue = tree[""] as? String ?? ""
-            return [(lastCursor, currentCursor, nodeValue)] + newChunk(remaining, currentCursor: currentCursor)
+            return [(lastCursor, currentCursor, nodeValue)] + newChunk(from: nextIndex)
         }
-        
-        guard let firstChar = remaining.first else { return [] }
-        let firstCharString = String(firstChar)
-        
-        let subtree = nextSubtree(tree, nextChar: firstCharString)
-        
-        if subtree == nil {
-            let nodeValue = tree[""] as? String
-            return [(lastCursor, currentCursor, nodeValue)] + newChunk(remaining, currentCursor: currentCursor)
+
+        let firstCharString = String(chars[nextIndex])
+        if let subtree = nextSubtree(tree, nextChar: firstCharString) {
+            return parse(
+                subtree,
+                nextIndex: nextIndex + 1,
+                lastCursor: lastCursor,
+                currentCursor: currentCursor + 1
+            )
         }
-        
-        return parse(
-            subtree!,
-            remaining: String(remaining.dropFirst()),
-            lastCursor: lastCursor,
-            currentCursor: currentCursor + 1
-        )
+
+        let nodeValue = tree[""] as? String
+        return [(lastCursor, currentCursor, nodeValue)] + newChunk(from: nextIndex)
     }
-    
-    return newChunk(string, currentCursor: 0)
+
+    return newChunk(from: 0)
 }
 
-/**
- * Transform a tree structure
- * - Parameter tree: Input tree
- * - Returns: Transformed tree
- */
 func transform(_ tree: [String: Any]) -> [String: Any] {
     var map: [String: Any] = [:]
     

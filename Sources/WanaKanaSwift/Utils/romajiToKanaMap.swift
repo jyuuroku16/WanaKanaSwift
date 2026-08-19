@@ -365,6 +365,9 @@ fileprivate func setSubTreeValue(_ tree: [String: Any], _ path: String, _ value:
 
 private let queue = DispatchQueue(label: "com.wanakana.romajiToKanaMap")
 nonisolated(unsafe) var romajiToKanaMap: [String: Any]?
+nonisolated(unsafe) var romajiToKanaMapIME: [String: Any]?
+nonisolated(unsafe) var romajiToKanaMapObsolete: [String: Any]?
+nonisolated(unsafe) var romajiToKanaMapIMEObsolete: [String: Any]?
 
 func getRomajiToKanaTree() -> [String: Any] {
     queue.sync {
@@ -375,10 +378,38 @@ func getRomajiToKanaTree() -> [String: Any] {
     }
 }
 
+func getRomajiToKanaTree(imeMode: IMEMode, useObsoleteKana: Bool) -> [String: Any] {
+    queue.sync {
+        if romajiToKanaMap == nil {
+            romajiToKanaMap = createRomajiToKanaMap()
+        }
+
+        switch (imeMode.isEnabled, useObsoleteKana) {
+        case (false, false):
+            return romajiToKanaMap!
+        case (true, false):
+            if romajiToKanaMapIME == nil {
+                romajiToKanaMapIME = IME_MODE_MAP(romajiToKanaMap!)
+            }
+            return romajiToKanaMapIME!
+        case (false, true):
+            if romajiToKanaMapObsolete == nil {
+                romajiToKanaMapObsolete = USE_OBSOLETE_KANA_MAP(romajiToKanaMap!)
+            }
+            return romajiToKanaMapObsolete!
+        case (true, true):
+            if romajiToKanaMapIMEObsolete == nil {
+                romajiToKanaMapIMEObsolete = IME_MODE_MAP(USE_OBSOLETE_KANA_MAP(romajiToKanaMap!))
+            }
+            return romajiToKanaMapIMEObsolete!
+        }
+    }
+}
+
 nonisolated(unsafe) let USE_OBSOLETE_KANA_MAP = createCustomMapping([
     "wi": "ゐ",
     "we": "ゑ",
-]);
+])
 
 func IME_MODE_MAP(_ map: [String: Any]) -> [String: Any] {
     var mapCopy = map
