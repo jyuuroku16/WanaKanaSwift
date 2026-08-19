@@ -1,16 +1,17 @@
 import Foundation
 
+private let consonantsWithY: Set<Character> = Set("bcdfghjklmnpqrstvwxyz")
+private let consonantsWithoutY: Set<Character> = Set("bcdfghjklmnpqrstvwxz")
+
+func isCharConsonant(_ char: Character, includeY: Bool = true) -> Bool {
+    guard let lowered = char.lowercased().first else { return false }
+    return (includeY ? consonantsWithY : consonantsWithoutY).contains(lowered)
+}
+
 /**
  * Tests a character and an english consonant. Returns true if the char is a consonant.
- * - Parameters:
- *   - char: Character to test
- *   - includeY: Optional parameter to include y as a consonant in test
- * - Returns: True if character is a consonant
  */
 func isCharConsonant(_ char: String = "", includeY: Bool = true) -> Bool {
-    if char.isEmpty { return false }
-    let pattern = includeY ? "^[bcdfghjklmnpqrstvwxyz]$" : "^[bcdfghjklmnpqrstvwxz]$"
-    let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
-    let range = NSRange(char.startIndex..., in: char)
-    return regex?.firstMatch(in: char, options: [], range: range) != nil
+    guard char.count == 1, let first = char.first else { return false }
+    return isCharConsonant(first, includeY: includeY)
 }

@@ -1,7 +1,6 @@
 import Foundation
 
-// Token type definitions
-enum TokenType: String, Equatable {
+public enum TokenType: String, Equatable, Sendable {
     case en = "en"
     case ja = "ja"
     case enNum = "englishNumeral"
@@ -15,129 +14,129 @@ enum TokenType: String, Equatable {
     case other = "other"
 }
 
-// Helper functions for character type checking
+func isCharEnSpace(_ char: Character) -> Bool { char == " " }
+func isCharJaSpace(_ char: Character) -> Bool { char == "　" }
+func isCharJaNum(_ char: Character) -> Bool { ("０"..."９").contains(char) }
+func isCharEnNum(_ char: Character) -> Bool { char.isASCII && char.isNumber }
+
 func isCharEnSpace(_ char: String) -> Bool {
-    return char == " "
+    char.count == 1 && char.first.map(isCharEnSpace) == true
 }
 
 func isCharJaSpace(_ char: String) -> Bool {
-    return char == "　"
+    char.count == 1 && char.first.map(isCharJaSpace) == true
 }
 
 func isCharJaNum(_ char: String) -> Bool {
-    return char.range(of: "[０-９]", options: .regularExpression) != nil
+    char.count == 1 && char.first.map(isCharJaNum) == true
 }
 
 func isCharEnNum(_ char: String) -> Bool {
-    return char.range(of: "[0-9]", options: .regularExpression) != nil
+    char.count == 1 && char.first.map(isCharEnNum) == true
 }
 
-/**
- * Get the type of a character
- * - Parameters:
- *   - input: Character to check
- *   - compact: Whether to use compact type checking
- * - Returns: Token type
- */
-func getType(_ input: String = "", compact: Bool = false) -> TokenType {
+func getType(_ input: Character, compact: Bool = false) -> TokenType {
     if compact {
-        switch true {
-        case isCharJaNum(input): return .other
-        case isCharEnNum(input): return .other
-        case isCharEnSpace(input): return .en
-        case isCharEnglishPunctuation(input): return .other
-        case isCharJaSpace(input): return .ja
-        case isCharJapanesePunctuation(input): return .other
-        case isCharJapanese(input): return .ja
-        case isCharRomaji(input): return .en
-        default: return .other
-        }
-    } else {
-        switch true {
-        case isCharJaSpace(input): return .space
-        case isCharEnSpace(input): return .space
-        case isCharJaNum(input): return .jaNum
-        case isCharEnNum(input): return .enNum
-        case isCharEnglishPunctuation(input): return .enPunc
-        case isCharJapanesePunctuation(input): return .jaPunc
-        case isCharKanji(input): return .kanji
-        case isCharHiragana(input): return .hiragana
-        case isCharKatakana(input): return .katakana
-        case isCharJapanese(input): return .ja
-        case isCharRomaji(input): return .en
-        default: return .other
-        }
+        if isCharJaNum(input) || isCharEnNum(input) { return .other }
+        if isCharEnSpace(input) { return .en }
+        if isCharEnglishPunctuation(input) { return .other }
+        if isCharJaSpace(input) { return .ja }
+        if isCharJapanesePunctuation(input) { return .other }
+        if isCharJapanese(input) { return .ja }
+        if isCharRomaji(input) { return .en }
+        return .other
     }
+
+    if isCharJaSpace(input) || isCharEnSpace(input) { return .space }
+    if isCharJaNum(input) { return .jaNum }
+    if isCharEnNum(input) { return .enNum }
+    if isCharEnglishPunctuation(input) { return .enPunc }
+    if isCharJapanesePunctuation(input) { return .jaPunc }
+    if isCharKanji(input) { return .kanji }
+    if isCharHiragana(input) { return .hiragana }
+    if isCharKatakana(input) { return .katakana }
+    if isCharJapanese(input) { return .ja }
+    if isCharRomaji(input) { return .en }
+    return .other
 }
 
-// Token structure for detailed output
-public struct Token: Equatable {
-    let type: TokenType
-    let value: String
+func getType(_ input: String = "", compact: Bool = false) -> TokenType {
+    guard let first = input.first else { return .other }
+    return getType(first, compact: compact)
+}
+
+public struct Token: Equatable, Sendable {
+    public let type: TokenType
+    public let value: String
+
+    public init(type: TokenType, value: String) {
+        self.type = type
+        self.value = value
+    }
 }
 
 /**
  * Splits input into array of strings separated by token types
- * - Parameters:
- *   - input: Text to tokenize
- *   - options: Configuration options
- * - Returns: Array of tokens or detailed token objects
- *
- * Example:
- * ```
- * tokenize("ふふフフ")
- * // ["ふふ", "フフ"]
- *
- * tokenize("感じ")
- * // ["感", "じ"]
- *
- * tokenize("人々")
- * // ["人々"]
- *
- * tokenize("truly 私は悲しい")
- * // ["truly", " ", "私", "は", "悲", "しい"]
- *
- * tokenize("truly 私は悲しい", options: ["compact": true])
- * // ["truly ", "私は悲しい"]
- * ```
  */
-func _tokenize(_ input: String = "", options: [String: Bool] = [:]) -> [Any] {
-    let compact = options["compact"] ?? false
-    let detailed = options["detailed"] ?? false
-    
-    if input.isEmpty { return [] }
-    
-    let chars = Array(input).map { String($0) }
-    guard let firstChar = chars.first else { return [] }
-    var prevType = getType(firstChar, compact: compact)
-    
-    let initial: Any = detailed ? Token(type: prevType, value: firstChar) : firstChar
-    var result: [Any] = [initial]
-    
-    for char in chars.dropFirst() {
-        let currType = getType(char, compact: compact)
-        let sameType = currType == prevType
-        prevType = currType
-        var newValue = char
-        
-        if sameType {
-            if detailed {
-                if let lastToken = result.popLast() as? Token {
-                    newValue = lastToken.value + newValue
-                }
-            } else {
-                if let lastValue = result.popLast() as? String {
-                    newValue = lastValue + newValue
-                }
-            }
+func tokenizeValues(_ input: String, compact: Bool) -> [String] {
+    guard !input.isEmpty else { return [] }
+
+    var result: [String] = []
+    var currentType: TokenType?
+    var currentValue = ""
+
+    for char in input {
+        let type = getType(char, compact: compact)
+        if type == currentType {
+            currentValue.append(char)
+            continue
         }
-        
-        if detailed {
-            result.append(Token(type: currType, value: newValue))
-        } else {
-            result.append(newValue)
+        if currentType != nil {
+            result.append(currentValue)
         }
+        currentType = type
+        currentValue = String(char)
     }
-    
+
+    if currentType != nil {
+        result.append(currentValue)
+    }
     return result
+}
+
+func tokenizeDetails(_ input: String, compact: Bool) -> [Token] {
+    guard !input.isEmpty else { return [] }
+
+    var result: [Token] = []
+    var currentType: TokenType?
+    var currentValue = ""
+
+    for char in input {
+        let type = getType(char, compact: compact)
+        if type == currentType {
+            currentValue.append(char)
+            continue
+        }
+        if let currentType {
+            result.append(Token(type: currentType, value: currentValue))
+        }
+        currentType = type
+        currentValue = String(char)
+    }
+
+    if let currentType {
+        result.append(Token(type: currentType, value: currentValue))
+    }
+    return result
+}
+
+func _tokenize(_ input: String = "", options: TokenizeOptions = TokenizeOptions()) -> [Any] {
+    if options.detailed {
+        return tokenizeDetails(input, compact: options.compact)
+    }
+    return tokenizeValues(input, compact: options.compact)
+}
+
+func _tokenize(_ input: String, options: [String: Bool]) -> [Any] {
+    _tokenize(input, options: TokenizeOptions(dictionary: options))
 }

@@ -1,16 +1,14 @@
 import Foundation
 
+func isCharInRange(_ char: Character, start: Int, end: Int) -> Bool {
+    guard let code = unicodeCodePoint(char) else { return false }
+    return isCode(code, inRange: start, end)
+}
+
 /**
  * Takes a character and a unicode range. Returns true if the char is in the range.
- * - Parameters:
- *   - char: Unicode character
- *   - start: Unicode start range
- *   - end: Unicode end range
- * - Returns: Boolean indicating if the character is in range
  */
 func isCharInRange(_ char: String = "", start: Int, end: Int) -> Bool {
-    if char.isEmpty { return false }
-    guard let firstScalar = char.unicodeScalars.first else { return false }
-    let code = Int(firstScalar.value)
-    return start <= code && code <= end
+    guard let first = char.first else { return false }
+    return isCharInRange(first, start: start, end: end)
 }

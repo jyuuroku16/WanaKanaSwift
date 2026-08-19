@@ -2,46 +2,22 @@ import Foundation
 
 /**
  * Test if `input` is Romaji (allowing Hepburn romanisation)
- * - Parameters:
- *   - input: Text to test
- *   - allowed: Additional regex pattern for allowed characters
- * - Returns: True if all characters are Romaji
- *
- * Example:
- * ```
- * isRomaji("Tōkyō and Ōsaka")
- * // => true
- * isRomaji("12a*b&c-d")
- * // => true
- * isRomaji("あアA")
- * // => false
- * isRomaji("お願い")
- * // => false
- * isRomaji("a！b&cーd") // Zenkaku punctuation fails
- * // => false
- * isRomaji("a！b&cーd", allowed: "^[！ー]$")
- * // => true
- * ```
  */
 func _isRomaji(_ input: String = "", allowed: String? = nil) -> Bool {
-    if input.isEmpty { return false }
+    guard !input.isEmpty else { return false }
 
-    let regex: NSRegularExpression?
-    if let pattern = allowed {
-        regex = try? NSRegularExpression(pattern: pattern, options: [])
+    let allowedRegex: NSRegularExpression?
+    if let allowed {
+        allowedRegex = try? NSRegularExpression(pattern: allowed)
     } else {
-        regex = nil
+        allowedRegex = nil
     }
 
-    return Array(input).allSatisfy { char in
+    return input.allSatisfy { char in
+        if isCharRomaji(char) { return true }
+        guard let allowedRegex else { return false }
         let charString = String(char)
-        let isRoma = isCharRomaji(charString)
-
-        if let regex = regex {
-            let range = NSRange(charString.startIndex..., in: charString)
-            return isRoma || regex.firstMatch(in: charString, options: [], range: range) != nil
-        }
-
-        return isRoma
+        let range = NSRange(charString.startIndex..., in: charString)
+        return allowedRegex.firstMatch(in: charString, range: range) != nil
     }
 }
