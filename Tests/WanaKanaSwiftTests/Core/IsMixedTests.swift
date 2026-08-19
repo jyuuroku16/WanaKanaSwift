@@ -51,4 +51,9 @@ final class IsMixedTests {
     @Test("ア is not mixed") func singleKatakana() async throws {
         #expect(WanaKanaSwift.isMixed("ア") == false)
     }
+
+    @Test("typed Options passKanji") func typedOptionsPassKanji() async throws {
+        #expect(WanaKanaSwift.isMixed("お腹A", options: Options(passKanji: false)) == false)
+        #expect(WanaKanaSwift.isMixed("お腹A", options: Options()) == true)
+    }
 }
