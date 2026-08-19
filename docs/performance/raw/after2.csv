@@ -1,0 +1,20 @@
+label,iterations,mean_us,min_us,max_us
+toKana short hiragana,2000,36.000,32.583,50.291
+toKana short katakana,2000,37.700,34.791,47.583
+toHiragana short romaji,2000,35.806,32.750,42.084
+toHiragana short katakana,2000,2.278,2.041,2.500
+toKatakana short romaji,2000,37.054,33.750,44.375
+toKatakana short hiragana,2000,1.810,1.584,1.917
+toRomaji short hiragana,2000,18.776,16.625,41.166
+toRomaji short katakana,2000,18.904,16.958,25.416
+toKana mixed short,2000,16.797,15.208,23.333
+isJapanese short,5000,0.379,0.292,0.500
+isMixed short,5000,0.087,0.041,0.208
+tokenize mixed short,3000,5.956,5.333,9.917
+toKana long romaji,200,41032.074,38891.834,58070.125
+toRomaji long hiragana,200,23885.248,21652.625,31703.708
+toRomaji long katakana,200,22950.189,21662.750,25493.542
+toHiragana long katakana,200,135.131,127.000,157.208
+isJapanese long,400,21.195,21.083,25.584
+tokenize long mixed,200,213.708,208.584,217.541
+stripOkurigana,3000,1.064,1.000,1.250
