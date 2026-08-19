@@ -1,13 +1,14 @@
 import Foundation
 
+func isCharEnglishPunctuation(_ char: Character) -> Bool {
+    guard let code = unicodeCodePoint(char) else { return false }
+    return isCode(code, inRanges: EN_PUNCTUATION_RANGES)
+}
+
 /**
  * Tests a character. Returns true if the character is considered English punctuation.
- * - Parameter char: Character string to test
- * - Returns: Boolean indicating if the character is English punctuation
  */
 func isCharEnglishPunctuation(_ char: String = "") -> Bool {
-    if char.isEmpty { return false }
-    return EN_PUNCTUATION_RANGES.contains { range in
-        isCharInRange(char, start: range[0], end: range[1])
-    }
+    guard !char.isEmpty, let first = char.first else { return false }
+    return isCharEnglishPunctuation(first)
 }

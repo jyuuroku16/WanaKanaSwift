@@ -85,6 +85,16 @@ final class ToKanaTests {
     @Test("WE = ヱ when useObsoleteKana is true") func useObsoleteKanaWeUpper() async throws {
         #expect(WanaKanaSwift.toKana("WE", options: ["useObsoleteKana": true]) == "ヱ")
     }
+    @Test("IMEMode string toHiragana converts uppercase romaji to hiragana") func imeModeStringHiragana() async throws {
+        #expect(WanaKanaSwift.toKana("ONAJI", options: Options(imeMode: .toHiragana)) == "おなじ")
+        #expect(WanaKanaSwift.toKana("ONAJI", options: ["IMEMode": TO_KANA_METHODS.HIRAGANA]) == "おなじ")
+    }
+
+    @Test("IMEMode string toKatakana converts lowercase romaji to katakana") func imeModeStringKatakana() async throws {
+        #expect(WanaKanaSwift.toKana("onaji", options: Options(imeMode: .toKatakana)) == "オナジ")
+        #expect(WanaKanaSwift.toKana("onaji", options: ["IMEMode": TO_KANA_METHODS.KATAKANA]) == "オナジ")
+    }
+
 }
 
 @Suite("SplitIntoConvertedKanaTests")

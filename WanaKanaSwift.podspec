@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name             = 'WanaKanaSwift'
-  spec.version          = '1.3.0'
+  spec.version          = '1.4.0'
   spec.summary          = 'A Swift library for detecting and transliterating Hiragana, Katakana, and Romaji'
   spec.description      = <<-DESC
                       WanaKanaSwift is a Swift port of the WanaKana JavaScript library, 
@@ -17,4 +17,5 @@ Pod::Spec.new do |spec|
   
   spec.swift_version = '6.0'
   spec.source_files = 'Sources/WanaKanaSwift/**/*'
+  spec.exclude_files = 'docs/**/*'
 end 

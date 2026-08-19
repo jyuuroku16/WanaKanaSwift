@@ -1,11 +1,13 @@
 import Foundation
 
+func isCharUpperCase(_ char: Character) -> Bool {
+    isCharInRange(char, start: LATIN_UPPERCASE_START, end: LATIN_UPPERCASE_END)
+}
+
 /**
  * Tests if char is in English unicode uppercase range
- * - Parameter char: Character to test
- * - Returns: True if character is uppercase
  */
 func isCharUpperCase(_ char: String = "") -> Bool {
-    if char.isEmpty { return false }
-    return isCharInRange(char, start: LATIN_UPPERCASE_START, end: LATIN_UPPERCASE_END)
+    guard !char.isEmpty, let first = char.first else { return false }
+    return isCharUpperCase(first)
 }

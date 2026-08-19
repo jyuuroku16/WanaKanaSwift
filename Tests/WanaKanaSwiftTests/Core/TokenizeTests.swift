@@ -76,6 +76,14 @@ final class TokenizeTests {
         ]))
     }
 
+    @Test("typed TokenizeOptions") func typedTokenizeOptions() async throws {
+        #expect(WanaKanaSwift.tokens("ふふフフ") == ["ふふ", "フフ"])
+        #expect(WanaKanaSwift.detailedTokens("ふふフフ") == [
+            Token(type: .hiragana, value: "ふふ"),
+            Token(type: .katakana, value: "フフ")
+        ])
+    }
+
     @Test("compact and detailed options") func compactAndDetailedOptions() async throws {
         let result = WanaKanaSwift.tokenize("5romaji here...!?人々漢字ひらがなカタ　カナ４「ＳＨＩＯ」。！ لنذهب", options: ["compact": true, "detailed": true])
         #expect(areTokenArraysEqual(result, [

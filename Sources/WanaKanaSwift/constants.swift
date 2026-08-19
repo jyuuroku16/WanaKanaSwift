@@ -5,12 +5,12 @@ public let VERSION = "5.3.1"
 
 // Conversion Methods
 public enum TO_KANA_METHODS {
-    static let HIRAGANA = "toHiragana"
-    static let KATAKANA = "toKatakana"
+    public static let HIRAGANA = "toHiragana"
+    public static let KATAKANA = "toKatakana"
 }
 
 public enum ROMANIZATIONS {
-    static let HEPBURN = "hepburn"
+    public static let HEPBURN = "hepburn"
 }
 
 /**

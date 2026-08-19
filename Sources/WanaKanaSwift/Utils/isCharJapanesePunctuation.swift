@@ -1,13 +1,15 @@
 import Foundation
 
+func isCharJapanesePunctuation(_ char: Character) -> Bool {
+    if isCharIterationMark(char) { return false }
+    guard let code = unicodeCodePoint(char) else { return false }
+    return isCode(code, inRanges: JA_PUNCTUATION_RANGES)
+}
+
 /**
  * Tests a character. Returns true if the character is considered Japanese punctuation.
- * - Parameter char: Character string to test
- * - Returns: Boolean indicating if the character is Japanese punctuation
  */
 func isCharJapanesePunctuation(_ char: String = "") -> Bool {
-    if char.isEmpty || isCharIterationMark(char) { return false }
-    return JA_PUNCTUATION_RANGES.contains { range in
-        isCharInRange(char, start: range[0], end: range[1])
-    }
+    guard !char.isEmpty, let first = char.first else { return false }
+    return isCharJapanesePunctuation(first)
 }
